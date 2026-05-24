@@ -59,15 +59,132 @@
       </div>
       <div class="button-bar">
         <button class="btn btn-secondary" onclick="location.href='dashbaord module.html'">← Back to Dashboard</button>
-        <button class="btn btn-primary">Create Report</button>
+        <button class="btn btn-primary" onclick="loadDonorReport()">Create Report</button>
       </div>
     </header>
     <div class="content">
-      <div class="card">
+      <div class="card" id="report-card">
         <h2>Donor reports placeholder</h2>
-        <p class="placeholder">This page is a dedicated placeholder for donor reporting. Use it to build exportable reports, filters, and performance dashboards for your funding sources.</p>
+        <p class="placeholder" id="report-placeholder">This page is a dedicated placeholder for donor reporting. Use it to build exportable reports, filters, and performance dashboards for your funding sources.</p>
       </div>
     </div>
   </main>
+
+<script>
+  const API_REPORT = 'http://localhost:3000/api/donors/report';
+  const TOKEN_KEY = 'rdmsToken';
+
+  function getAuthToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  function redirectToLogin() {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = 'login module.html';
+  }
+
+  async function apiGet(url) {
+    const token = getAuthToken();
+    if (!token) {
+      redirectToLogin();
+      return null;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      return null;
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Unable to load report');
+    }
+    return data;
+  }
+
+  function formatCurrency(value) {
+    return `₨${new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(value) || 0)}`;
+  }
+
+  function renderReport(data) {
+    const card = document.getElementById('report-card');
+    if (!card) return;
+
+    const topDonors = data.topDonors || [];
+    const byType = data.byType || [];
+    const monthly = data.monthly || [];
+    const allocation = data.allocationSplit || {};
+
+    card.innerHTML = `
+      <h2>Donor Report Summary</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
+        <div style="padding:18px;background:#f6f4ef;border-radius:14px;">
+          <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Allocated Funding</div>
+          <div style="font-size:26px;font-weight:700;color:#1a3c2e;">${formatCurrency(allocation.allocated || 0)}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:6px;">Funds currently assigned to projects.</div>
+        </div>
+        <div style="padding:18px;background:#f6f4ef;border-radius:14px;">
+          <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Unallocated Pipeline</div>
+          <div style="font-size:26px;font-weight:700;color:#1a3c2e;">${formatCurrency(allocation.unallocated || 0)}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:6px;">Funds held pending project assignment.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
+        <div style="padding:18px;background:#fff;border:1px solid #e2d9cc;border-radius:14px;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Top Donors</div>
+          ${topDonors.length === 0 ? '<p style="color:#6b7280;">No donor contributions found.</p>' : topDonors.map(d => `
+            <div style="margin-bottom:10px;">
+              <div style="font-weight:600;color:#1a3c2e;">${d.donor_name}</div>
+              <div style="font-size:12px;color:#6b7280;">${d.total_donations} donations · ${formatCurrency(d.total_amount)}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="padding:18px;background:#fff;border:1px solid #e2d9cc;border-radius:14px;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Donation Breakdown</div>
+          ${byType.length === 0 ? '<p style="color:#6b7280;">No donations available.</p>' : byType.map(item => `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span style="font-size:13px;color:#1a3c2e;">${item.type}</span>
+              <strong style="color:#1a3c2e;">${formatCurrency(item.total)}</strong>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="padding:18px;background:#fff;border:1px solid #e2d9cc;border-radius:14px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Monthly Donation Trend</div>
+        ${monthly.length === 0 ? '<p style="color:#6b7280;">No monthly data available.</p>' : monthly.map(item => `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0ede8;">
+            <span style="color:#1a3c2e;">${item.month}</span>
+            <span style="color:#1a3c2e;">${formatCurrency(item.total)}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async function loadDonorReport() {
+    try {
+      const response = await apiGet(API_REPORT);
+      if (!response) return;
+      renderReport(response.data);
+    } catch (error) {
+      console.error('loadDonorReport error:', error);
+      const card = document.getElementById('report-card');
+      if (card) {
+        card.innerHTML = '<h2>Donor reports unavailable</h2><p class="placeholder">Unable to fetch donor report data. Please log in again or check your connection.</p>';
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadDonorReport);
+</script>
 </body>
 </html>

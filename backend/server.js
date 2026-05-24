@@ -27,6 +27,11 @@ app.get('/health', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/beneficiaries', require('./routes/beneficiary.routes'));
+app.use('/api/donors', require('./routes/donor.routes'));
+app.use('/api/donations', require('./routes/donation.routes'));
+app.use('/api/projects', require('./routes/project.routes'));
+app.use('/api/locations', require('./routes/location.routes'));
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Not found.' });
