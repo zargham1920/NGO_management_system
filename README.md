@@ -1,1 +1,0 @@
-# NGO_management_system
