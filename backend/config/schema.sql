@@ -23,7 +23,8 @@ CREATE TABLE Donor (
     donor_name VARCHAR(100) NOT NULL,
     contact VARCHAR(50) NOT NULL,
     type VARCHAR(50) NOT NULL,
-    email VARCHAR(100)
+    email VARCHAR(100),
+    country VARCHAR(50) NOT NULL DEFAULT 'Pakistan'
 );
 CREATE TABLE Donation (
     donation_id INT PRIMARY KEY AUTO_INCREMENT,

@@ -1,0 +1,6 @@
+◇ injected env (16) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+MySQL database connected successfully.
+Server listening on port 3000
+Aid_Distribution count: [ { cnt: 0 } ]

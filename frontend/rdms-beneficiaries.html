@@ -667,11 +667,11 @@
       <p>Module 1 — Social Mapping & Needs Assessment</p>
     </div>
     <div class="topbar-right">
-      <button class="btn-secondary" onclick="alert('Exporting CSV...')">
+      <button class="btn-secondary" onclick="exportCsv()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export CSV
       </button>
-      <button class="btn-primary" onclick="showView('register')">
+      <button class="btn-primary" onclick="openEditProfile()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Register Beneficiary
       </button>
@@ -690,28 +690,28 @@
         <div class="s-chip">
           <div class="s-chip-dot" style="background:var(--green-light)"></div>
           <div>
-            <div class="s-chip-num">20,847</div>
+            <div class="s-chip-num" id="summary-total">20,847</div>
             <div class="s-chip-label">Total Registered</div>
           </div>
         </div>
         <div class="s-chip">
           <div class="s-chip-dot" style="background:var(--amber)"></div>
           <div>
-            <div class="s-chip-num">4,210</div>
+            <div class="s-chip-num" id="summary-active">4,210</div>
             <div class="s-chip-label">Active Aid Recipients</div>
           </div>
         </div>
         <div class="s-chip">
           <div class="s-chip-dot" style="background:var(--blue)"></div>
           <div>
-            <div class="s-chip-num">312</div>
+            <div class="s-chip-num" id="summary-new-month">312</div>
             <div class="s-chip-label">New This Month</div>
           </div>
         </div>
         <div class="s-chip">
           <div class="s-chip-dot" style="background:var(--red)"></div>
           <div>
-            <div class="s-chip-num">89</div>
+            <div class="s-chip-num" id="summary-high">89</div>
             <div class="s-chip-label">High-Priority Cases</div>
           </div>
         </div>
@@ -721,37 +721,32 @@
       <div class="filter-bar">
         <div class="search-input-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search by name, CNIC, or village…" oninput="filterTable(this.value)"/>
+          <input id="search-input" type="text" placeholder="Search by name, CNIC, or village…" oninput="filterTable()"/>
         </div>
-        <select onchange="filterTable()">
+        <select id="district-filter" onchange="filterTable()">
           <option value="">All Districts</option>
-          <option>Tharparkar</option>
-          <option>Lasbela</option>
-          <option>Kech</option>
-          <option>Khairpur</option>
-          <option>Cholistan</option>
         </select>
-        <select onchange="filterTable()">
+        <select id="gender-filter" onchange="filterTable()">
           <option value="">All Genders</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
         </select>
-        <select onchange="filterTable()">
+        <select id="status-filter" onchange="filterTable()">
           <option value="">All Statuses</option>
-          <option>Active</option>
-          <option>Inactive</option>
-          <option>High Priority</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="High Priority">High Priority</option>
         </select>
-        <select onchange="filterTable()">
+        <select id="need-filter" onchange="filterTable()">
           <option value="">All Needs</option>
-          <option>Clean Water</option>
-          <option>Education</option>
-          <option>Healthcare</option>
-          <option>Food Security</option>
-          <option>Shelter</option>
+          <option value="Clean Water">Clean Water</option>
+          <option value="Education">Education</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Food Security">Food Security</option>
+          <option value="Shelter">Shelter</option>
         </select>
-        <span class="filter-count">Showing <strong>8</strong> of 20,847</span>
+        <span class="filter-count">Showing <strong id="filter-count">0</strong> beneficiaries</span>
       </div>
 
       <!-- Table -->
@@ -773,43 +768,7 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="beneficiary-tbody">
-              <tr onclick="showProfile(0)">
-                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
-                <td>
-                  <div class="beneficiary-cell">
-                    <div class="b-avatar" style="background:#d8f3dc;color:#2d6a4f">AK</div>
-                    <div>
-                      <div class="b-name">Ahmed Khan</div>
-                      <div class="b-cnic">42301-1234567-1</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Mithi, <span style="color:var(--text-muted)">Tharparkar</span></td>
-                <td>6 members</td>
-                <td>Agriculture</td>
-                <td>
-                  <div class="needs-tags">
-                    <span class="need-tag">💧 Water</span>
-                    <span class="need-tag">🏥 Health</span>
-                  </div>
-                </td>
-                <td><span class="chip chip-green">Active</span></td>
-                <td>22 May 2026</td>
-                <td>
-                  <div class="action-btns" onclick="event.stopPropagation()">
-                    <div class="icon-action" title="View Profile" onclick="showProfile(0)">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    </div>
-                    <div class="icon-action" title="Edit" onclick="showView('register')">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    </div>
-                    <div class="icon-action danger" title="Delete" onclick="showDeleteModal()">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="beneficiary-tbody"></tbody>
               <tr onclick="showProfile(1)">
                 <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
                 <td>
@@ -1006,39 +965,39 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Full Name <span class="required-star">*</span></label>
-              <input type="text" placeholder="e.g. Ahmed Ali Khan"/>
+              <input id="full-name" type="text" placeholder="e.g. Ahmed Ali Khan"/>
             </div>
             <div class="form-group">
               <label>CNIC Number <span class="required-star">*</span></label>
-              <input type="text" placeholder="XXXXX-XXXXXXX-X" maxlength="15"/>
+              <input id="cnic" type="text" placeholder="XXXXX-XXXXXXX-X" maxlength="15"/>
               <span class="form-hint">Format: 42301-1234567-1 (must be unique)</span>
             </div>
             <div class="form-group">
               <label>Date of Birth</label>
-              <input type="date"/>
+              <input id="date-of-birth" type="date"/>
             </div>
             <div class="form-group">
               <label>Gender <span class="required-star">*</span></label>
-              <select>
+              <select id="gender">
                 <option value="">Select gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             <div class="form-group">
               <label>Marital Status</label>
-              <select>
+              <select id="marital-status">
                 <option value="">Select status</option>
-                <option>Married</option>
-                <option>Single</option>
-                <option>Widowed</option>
-                <option>Divorced</option>
+                <option value="Married">Married</option>
+                <option value="Single">Single</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Divorced">Divorced</option>
               </select>
             </div>
             <div class="form-group">
               <label>Contact Number</label>
-              <input type="tel" placeholder="e.g. 0333-1234567"/>
+              <input id="contact-number" type="tel" placeholder="e.g. 0333-1234567"/>
             </div>
           </div>
         </div>
@@ -1057,44 +1016,44 @@
           <div class="form-grid three">
             <div class="form-group">
               <label>Household Size <span class="required-star">*</span></label>
-              <input type="number" placeholder="e.g. 6" min="1" max="30"/>
+              <input id="household-size" type="number" placeholder="e.g. 6" min="1" max="30"/>
             </div>
             <div class="form-group">
               <label>No. of Children</label>
-              <input type="number" placeholder="e.g. 3" min="0"/>
+              <input id="children-count" type="number" placeholder="e.g. 3" min="0"/>
             </div>
             <div class="form-group">
               <label>No. of Dependents</label>
-              <input type="number" placeholder="e.g. 2" min="0"/>
+              <input id="dependents" type="number" placeholder="e.g. 2" min="0"/>
             </div>
             <div class="form-group">
               <label>Primary Income Source <span class="required-star">*</span></label>
-              <select>
+              <select id="income-source">
                 <option value="">Select source</option>
-                <option>Agriculture</option>
-                <option>Livestock</option>
-                <option>Daily Wage</option>
-                <option>Fisherman</option>
-                <option>Small Business</option>
-                <option>Government Employee</option>
-                <option>Widow / Dependent</option>
-                <option>Remittance</option>
-                <option>None</option>
+                <option value="Agriculture">Agriculture</option>
+                <option value="Livestock">Livestock</option>
+                <option value="Daily Wage">Daily Wage</option>
+                <option value="Fisherman">Fisherman</option>
+                <option value="Small Business">Small Business</option>
+                <option value="Government Employee">Government Employee</option>
+                <option value="Widow / Dependent">Widow / Dependent</option>
+                <option value="Remittance">Remittance</option>
+                <option value="None">None</option>
               </select>
             </div>
             <div class="form-group">
               <label>Monthly Income (PKR)</label>
-              <input type="number" placeholder="e.g. 15000"/>
+              <input id="monthly-income" type="number" placeholder="e.g. 15000"/>
             </div>
             <div class="form-group">
               <label>Housing Type</label>
-              <select>
+              <select id="housing-type">
                 <option value="">Select type</option>
-                <option>Permanent (Pucca)</option>
-                <option>Semi-permanent</option>
-                <option>Temporary (Katcha)</option>
-                <option>Tent / Shelter</option>
-                <option>No Shelter</option>
+                <option value="Permanent (Pucca)">Permanent (Pucca)</option>
+                <option value="Semi-permanent">Semi-permanent</option>
+                <option value="Temporary (Katcha)">Temporary (Katcha)</option>
+                <option value="Tent / Shelter">Tent / Shelter</option>
+                <option value="No Shelter">No Shelter</option>
               </select>
             </div>
           </div>
@@ -1113,41 +1072,32 @@
         <div class="form-body">
           <div class="form-grid three">
             <div class="form-group">
-              <label>Province <span class="required-star">*</span></label>
-              <select>
-                <option value="">Select province</option>
-                <option>Sindh</option>
-                <option>Balochistan</option>
-                <option>Punjab</option>
-                <option>KPK</option>
+              <label>Region <span class="required-star">*</span></label>
+              <select id="region">
+                <option value="">Select region</option>
               </select>
             </div>
             <div class="form-group">
               <label>District <span class="required-star">*</span></label>
-              <select>
+              <select id="district">
                 <option value="">Select district</option>
-                <option>Tharparkar</option>
-                <option>Lasbela</option>
-                <option>Kech</option>
-                <option>Khairpur</option>
-                <option>Cholistan</option>
               </select>
             </div>
             <div class="form-group">
               <label>Tehsil</label>
-              <input type="text" placeholder="e.g. Mithi"/>
+              <input id="tehsil" type="text" placeholder="e.g. Mithi"/>
             </div>
             <div class="form-group">
               <label>Village Name <span class="required-star">*</span></label>
-              <input type="text" placeholder="e.g. Darbelo"/>
+              <input id="village-name" type="text" placeholder="e.g. Darbelo"/>
             </div>
             <div class="form-group">
               <label>GPS Latitude</label>
-              <input type="text" placeholder="e.g. 24.7136"/>
+              <input id="gps-lat" type="text" placeholder="e.g. 24.7136"/>
             </div>
             <div class="form-group">
               <label>GPS Longitude</label>
-              <input type="text" placeholder="e.g. 69.5560"/>
+              <input id="gps-lng" type="text" placeholder="e.g. 69.5560"/>
             </div>
           </div>
         </div>
@@ -1163,38 +1113,38 @@
           </div>
         </div>
         <div class="form-body">
-          <div class="needs-grid">
+          <div class="needs-grid" id="needs-grid">
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 💧 Lack of Clean Water
+              <input type="checkbox" value="Clean Water"/> 💧 Lack of Clean Water
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 📚 Out-of-School Children
+              <input type="checkbox" value="Education"/> 📚 Out-of-School Children
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 🏥 No Healthcare Access
+              <input type="checkbox" value="Healthcare"/> 🏥 No Healthcare Access
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 🌾 Food Insecurity
+              <input type="checkbox" value="Food Security"/> 🌾 Food Insecurity
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 🏠 Inadequate Shelter
+              <input type="checkbox" value="Shelter"/> 🏠 Inadequate Shelter
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> ⚡ No Electricity
+              <input type="checkbox" value="Electricity"/> ⚡ No Electricity
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 💼 Unemployment
+              <input type="checkbox" value="Unemployment"/> 💼 Unemployment
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> 👩 Widow / Female-headed
+              <input type="checkbox" value="Female-headed"/> 👩 Widow / Female-headed
             </label>
             <label class="need-checkbox" onclick="toggleNeed(this)">
-              <input type="checkbox"/> ♿ Disability in Household
+              <input type="checkbox" value="Disability"/> ♿ Disability in Household
             </label>
           </div>
           <div class="form-group" style="margin-top:16px">
             <label>Additional Notes</label>
-            <textarea placeholder="Describe any specific vulnerabilities, medical conditions, or urgent needs…"></textarea>
+            <textarea id="notes" placeholder="Describe any specific vulnerabilities, medical conditions, or urgent needs…"></textarea>
           </div>
         </div>
         <div class="form-footer">
@@ -1217,9 +1167,9 @@
         </button>
         <div style="flex:1">
           <h2 id="profile-name-h">Ahmed Khan</h2>
-          <p>Beneficiary Profile · ID #1042</p>
+          <p id="profile-id-text">Beneficiary Profile · ID #1042</p>
         </div>
-        <button class="btn-secondary" onclick="showView('register')">
+        <button class="btn-secondary" onclick="openEditProfile()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Edit Profile
         </button>
@@ -1240,53 +1190,53 @@
             </div>
             <div class="profile-info">
               <div class="profile-name" id="profile-fullname">Ahmed Khan</div>
-              <div class="profile-id">CNIC: 42301-1234567-1</div>
-              <span class="chip chip-green">Active</span>
+              <div class="profile-id" id="profile-cnic">CNIC: 42301-1234567-1</div>
+              <span class="chip chip-green" id="profile-status">Active</span>
 
               <div style="margin-top:16px">
                 <div class="profile-detail-row">
                   <span class="pd-label">Gender</span>
-                  <span class="pd-value">Male</span>
+                  <span class="pd-value" id="profile-gender">Male</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Age</span>
-                  <span class="pd-value">38 years</span>
+                  <span class="pd-value" id="profile-age">38 years</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Marital Status</span>
-                  <span class="pd-value">Married</span>
+                  <span class="pd-value" id="profile-marital">Married</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Contact</span>
-                  <span class="pd-value">0333-1234567</span>
+                  <span class="pd-value" id="profile-contact">0333-1234567</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Village</span>
-                  <span class="pd-value">Mithi, Tharparkar</span>
+                  <span class="pd-value" id="profile-location">Mithi, Tharparkar</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Household Size</span>
-                  <span class="pd-value">6 members</span>
+                  <span class="pd-value" id="profile-household">6 members</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Income Source</span>
-                  <span class="pd-value">Agriculture</span>
+                  <span class="pd-value" id="profile-income">Agriculture</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Monthly Income</span>
-                  <span class="pd-value">₨18,000</span>
+                  <span class="pd-value" id="profile-monthly-income">₨18,000</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Housing</span>
-                  <span class="pd-value">Katcha (Temporary)</span>
+                  <span class="pd-value" id="profile-housing">Katcha (Temporary)</span>
                 </div>
                 <div class="profile-detail-row">
                   <span class="pd-label">Registered On</span>
-                  <span class="pd-value">12 Jan 2024</span>
+                  <span class="pd-value" id="profile-registered">12 Jan 2024</span>
                 </div>
               </div>
 
-              <div class="profile-needs">
+              <div class="profile-needs" id="profile-needs-container">
                 <div class="profile-needs-title">Identified Needs</div>
                 <span class="need-tag-lg chip-red">💧 Clean Water</span>
                 <span class="need-tag-lg chip-amber">🏥 Healthcare</span>
@@ -1300,16 +1250,16 @@
           <!-- Stats row -->
           <div class="profile-stats">
             <div class="p-stat">
-              <div class="p-stat-num">7</div>
+              <div class="p-stat-num" id="profile-aid-count">0</div>
               <div class="p-stat-label">Aid Received</div>
             </div>
             <div class="p-stat">
-              <div class="p-stat-num">₨42K</div>
-              <div class="p-stat-label">Total Value</div>
+              <div class="p-stat-num" id="profile-project-count">0</div>
+              <div class="p-stat-label">Projects Linked</div>
             </div>
             <div class="p-stat">
-              <div class="p-stat-num">3</div>
-              <div class="p-stat-label">Projects Linked</div>
+              <div class="p-stat-num" id="profile-last-aid-date">—</div>
+              <div class="p-stat-label">Last Aid</div>
             </div>
           </div>
 
@@ -1321,49 +1271,13 @@
 
           <!-- Aid History -->
           <div class="tab-content active" id="tab-history">
-            <div class="timeline">
+            <div class="timeline" id="aid-history-list">
               <div class="tl-item">
-                <div class="tl-dot" style="background:var(--green-light)"></div>
+                <div class="tl-dot" style="background:var(--text-muted)"></div>
                 <div class="tl-card">
                   <div class="tl-top">
-                    <div class="tl-title">Solar Water Filter × 1</div>
-                    <span class="chip chip-green">Delivered</span>
+                    <div class="tl-title">No aid history available yet.</div>
                   </div>
-                  <div class="tl-body">Project: Pani Project · Distributed by: Field Worker Tariq · Value: ₨8,500</div>
-                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">22 May 2026</div>
-                </div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot" style="background:var(--amber)"></div>
-                <div class="tl-card">
-                  <div class="tl-top">
-                    <div class="tl-title">Medical Kit × 2</div>
-                    <span class="chip chip-green">Delivered</span>
-                  </div>
-                  <div class="tl-body">Project: Health First · Distributed by: Dr. Sana Mirza · Value: ₨3,200</div>
-                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">10 Mar 2026</div>
-                </div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot" style="background:var(--blue)"></div>
-                <div class="tl-card">
-                  <div class="tl-top">
-                    <div class="tl-title">Wheat Bags × 10</div>
-                    <span class="chip chip-green">Delivered</span>
-                  </div>
-                  <div class="tl-body">Project: Food Security · Funded by: Aga Khan Foundation · Value: ₨12,000</div>
-                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">15 Jan 2026</div>
-                </div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot" style="background:var(--green-light)"></div>
-                <div class="tl-card">
-                  <div class="tl-top">
-                    <div class="tl-title">School Supplies × 3</div>
-                    <span class="chip chip-green">Delivered</span>
-                  </div>
-                  <div class="tl-body">Project: Literacy First · For 3 children in household · Value: ₨4,500</div>
-                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">20 Aug 2025</div>
                 </div>
               </div>
             </div>
@@ -1373,23 +1287,14 @@
           <div class="tab-content" id="tab-needs">
             <div class="form-card">
               <div class="form-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div style="padding:14px;border-radius:12px;border:2px solid var(--green-mid);background:var(--green-pale)">
-                    <div style="font-size:20px;margin-bottom:6px">💧</div>
-                    <div style="font-weight:600;font-size:13px;color:var(--green-mid)">Clean Water</div>
-                    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">No access to clean piped water. Relies on a distant well.</div>
-                    <div style="margin-top:8px"><span class="chip chip-red">Critical</span></div>
-                  </div>
-                  <div style="padding:14px;border-radius:12px;border:2px solid var(--amber);background:var(--amber-pale)">
-                    <div style="font-size:20px;margin-bottom:6px">🏥</div>
-                    <div style="font-weight:600;font-size:13px;color:#b7791f">Healthcare</div>
-                    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Nearest clinic is 45 km away. Child has chronic illness.</div>
-                    <div style="margin-top:8px"><span class="chip chip-amber">High</span></div>
+                <div id="profile-needs-list" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div style="padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--white)">
+                    <div class="tl-title">No needs recorded yet.</div>
                   </div>
                 </div>
-                <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:12px;font-size:13px;color:var(--text-muted);line-height:1.7">
+                <div id="profile-notes" style="margin-top:16px;padding:14px;background:var(--bg);border-radius:12px;font-size:13px;color:var(--text-muted);line-height:1.7">
                   <strong style="color:var(--text-dark)">Field Worker Notes:</strong><br/>
-                  Family visited on 15 Jan 2026. Father is primary earner through seasonal farming. Eldest son (16) dropped out of school to assist. Mother reports recurring chest illness in youngest child (4 yrs). Urgent medical intervention recommended.
+                  No additional notes available.
                 </div>
               </div>
             </div>
@@ -1408,34 +1313,9 @@
                     <th>Notes</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="family-tbody">
                   <tr>
-                    <td><strong>Zainab Ahmed</strong></td>
-                    <td>Wife</td>
-                    <td>34</td>
-                    <td><span class="chip chip-green">Healthy</span></td>
-                    <td>—</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Bilal Ahmed</strong></td>
-                    <td>Son</td>
-                    <td>16</td>
-                    <td><span class="chip chip-amber">Out of School</span></td>
-                    <td>Dropped out Grade 9</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Sara Ahmed</strong></td>
-                    <td>Daughter</td>
-                    <td>12</td>
-                    <td><span class="chip chip-green">In School</span></td>
-                    <td>Grade 6, mobile school</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Hamza Ahmed</strong></td>
-                    <td>Son</td>
-                    <td>4</td>
-                    <td><span class="chip chip-red">Ill</span></td>
-                    <td>Chronic chest illness</td>
+                    <td colspan="5" style="text-align:center;padding:18px;color:var(--text-muted)">No family data available.</td>
                   </tr>
                 </tbody>
               </table>
@@ -1456,7 +1336,7 @@
     <p>This will permanently remove this beneficiary and all associated records from the system. This action cannot be undone.</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="hideDeleteModal()">Cancel</button>
-      <button class="btn-danger" onclick="hideDeleteModal(); showToast('Beneficiary record deleted.')">Delete Record</button>
+      <button class="btn-danger" onclick="deleteBeneficiary()">Delete Record</button>
     </div>
   </div>
 </div>
@@ -1468,29 +1348,606 @@
 </div>
 
 <script>
-  const profiles = [
-    { name: 'Ahmed Khan', initials: 'AK' },
-    { name: 'Fatima Bibi', initials: 'FB' },
-    { name: 'Zaid Khan',   initials: 'ZK' },
-  ];
+  const API_BASE = 'http://localhost:3000/api/beneficiaries';
+  const LOCATION_API = 'http://localhost:3000/api/locations';
+  const TOKEN_KEY = 'rdmsToken';
 
-  function showView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  let currentBeneficiaryId = null;
+  let deleteBeneficiaryId = null;
+  let locations = [];
+
+  function getAuthToken() {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      redirectToLogin();
+      return null;
+    }
+    return token;
   }
 
-  function showProfile(idx) {
-    const p = profiles[idx] || profiles[0];
-    document.getElementById('profile-name-h').textContent = p.name;
-    document.getElementById('profile-fullname').textContent = p.name;
-    document.getElementById('profile-avatar').textContent = p.initials;
-    showView('profile');
+  function redirectToLogin() {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = 'login module.html';
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  async function apiSend(url, options = {}) {
+    const token = getAuthToken();
+    if (!token) return null;
+
+    const defaultHeaders = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    const response = await fetch(url, {
+      headers: { ...defaultHeaders, ...(options.headers || {}) },
+      ...options,
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      return null;
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok) {
+      const errorData = contentType.includes('application/json') ? await response.json() : null;
+      throw new Error(errorData?.message || 'Request failed');
+    }
+
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+    return response;
+  }
+
+  async function exportCsv() {
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE}/export`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData?.message || 'Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'beneficiaries.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || 'Unable to export CSV.');
+    }
+  }
+
+  function formatDate(value) {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value || '—');
+    return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function formatCurrency(value) {
+    const number = Number(value);
+    if (!number) return '—';
+    return `₨${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(number)}`;
+  }
+
+  function getStatusClass(status) {
+    const normalized = String(status || '').toLowerCase();
+    if (normalized === 'active') return 'chip-green';
+    if (normalized === 'inactive') return 'chip-red';
+    if (normalized === 'high priority') return 'chip-amber';
+    return 'chip-blue';
+  }
+
+  function getInitials(name) {
+    return String(name || '')
+      .split(' ')
+      .filter(Boolean)
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  async function initPage() {
+    await loadLocations();
+    await loadSummary();
+    await loadBeneficiaries();
+  }
+
+  async function loadLocations() {
+    try {
+      const response = await apiSend(LOCATION_API);
+      locations = response?.data || [];
+      const districtFilter = document.getElementById('district-filter');
+      const districtSelect = document.getElementById('district');
+      const regionSelect = document.getElementById('region');
+      const districts = Array.from(new Set(locations.map((item) => item.district).filter(Boolean))).sort();
+      const regions = Array.from(new Set(locations.map((item) => item.region).filter(Boolean))).sort();
+
+      regionSelect.innerHTML = '<option value="">Select region</option>' + regions
+        .map((region) => `<option value="${escapeHtml(region)}">${escapeHtml(region)}</option>`)
+        .join('');
+
+      districtFilter.innerHTML = '<option value="">All Districts</option>' + districts
+        .map((district) => `<option value="${escapeHtml(district)}">${escapeHtml(district)}</option>`)
+        .join('');
+
+      districtSelect.innerHTML = '<option value="">Select district</option>' + districts
+        .map((district) => `<option value="${escapeHtml(district)}">${escapeHtml(district)}</option>`)
+        .join('');
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load location data.');
+    }
+  }
+
+  async function loadSummary() {
+    try {
+      const response = await apiSend(`${API_BASE}/summary`);
+      const summary = response?.data || {};
+      document.getElementById('summary-total').textContent = summary.total_registered ?? '0';
+      document.getElementById('summary-active').textContent = summary.active_recipients ?? '0';
+      document.getElementById('summary-new-month').textContent = summary.new_this_month ?? '0';
+      document.getElementById('summary-high').textContent = summary.high_priority ?? '0';
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadBeneficiaries() {
+    try {
+      const params = new URLSearchParams();
+      const search = document.getElementById('search-input').value.trim();
+      const district = document.getElementById('district-filter').value;
+      const gender = document.getElementById('gender-filter').value;
+      const status = document.getElementById('status-filter').value;
+      const need = document.getElementById('need-filter').value;
+
+      if (search) params.set('search', search);
+      if (district) params.set('district', district);
+      if (gender) params.set('gender', gender);
+      if (status) params.set('status', status);
+      if (need) params.set('need', need);
+      params.set('page', '1');
+      params.set('limit', '20');
+
+      const url = `${API_BASE}?${params.toString()}`;
+      const response = await apiSend(url);
+      const rows = response?.data || [];
+      document.getElementById('filter-count').textContent = response?.count ?? 0;
+      renderBeneficiariesTable(rows);
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load beneficiaries.');
+    }
+  }
+
+  function renderNeedsTags(needs) {
+    if (!needs || !needs.length) {
+      return '<span class="need-tag">None</span>';
+    }
+    return needs
+      .map((need) => `<span class="need-tag">${escapeHtml(need)}</span>`)
+      .join('');
+  }
+
+  function renderBeneficiariesTable(rows) {
+    const tbody = document.getElementById('beneficiary-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:18px;color:var(--text-muted)">No beneficiaries found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows
+      .map((row) => {
+        const location = [row.village_name, row.district].filter(Boolean).join(', ');
+        const lastAid = row.last_aid_date ? formatDate(row.last_aid_date) : '—';
+        const statusClass = getStatusClass(row.status);
+
+        return `
+          <tr onclick="showProfile(${row.beneficiary_id})">
+            <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+            <td>
+              <div class="beneficiary-cell">
+                <div class="b-avatar" style="background:#d8f3dc;color:#2d6a4f">${escapeHtml(getInitials(row.full_name))}</div>
+                <div>
+                  <div class="b-name">${escapeHtml(row.full_name)}</div>
+                  <div class="b-cnic">${escapeHtml(row.cnic)}</div>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(location)}</td>
+            <td>${row.household_size ? `${escapeHtml(row.household_size)} members` : '—'}</td>
+            <td>${escapeHtml(row.income_source || '—')}</td>
+            <td>
+              <div class="needs-tags">${renderNeedsTags(row.needs)}</div>
+            </td>
+            <td><span class="chip ${statusClass}">${escapeHtml(row.status || 'Unknown')}</span></td>
+            <td>${lastAid}</td>
+            <td>
+              <div class="action-btns" onclick="event.stopPropagation()">
+                <div class="icon-action" title="View Profile" onclick="showProfile(${row.beneficiary_id})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="icon-action" title="Edit" onclick="openEditProfile(${row.beneficiary_id})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <div class="icon-action danger" title="Delete" onclick="showDeleteModal(${row.beneficiary_id})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+      })
+      .join('');
+  }
+
+  async function showProfile(id) {
+    try {
+      currentBeneficiaryId = id;
+      const response = await apiSend(`${API_BASE}/${id}`);
+      const beneficiary = response?.data;
+      if (!beneficiary) {
+        showToast('Beneficiary record not found.');
+        return;
+      }
+
+      document.getElementById('profile-name-h').textContent = beneficiary.full_name || 'Unknown';
+      document.getElementById('profile-fullname').textContent = beneficiary.full_name || 'Unknown';
+      document.getElementById('profile-avatar').textContent = getInitials(beneficiary.full_name);
+      document.getElementById('profile-id-text').textContent = `Beneficiary Profile · ID #${beneficiary.beneficiary_id}`;
+      document.getElementById('profile-cnic').textContent = `CNIC: ${beneficiary.cnic || '—'}`;
+
+      const statusEl = document.getElementById('profile-status');
+      statusEl.textContent = beneficiary.status || 'Unknown';
+      statusEl.className = `chip ${getStatusClass(beneficiary.status)}`;
+
+      document.getElementById('profile-gender').textContent = beneficiary.gender || '—';
+      document.getElementById('profile-age').textContent = beneficiary.age ? `${beneficiary.age} years` : (beneficiary.date_of_birth ? `${computeAge(beneficiary.date_of_birth)} years` : '—');
+      document.getElementById('profile-marital').textContent = beneficiary.marital_status || '—';
+      document.getElementById('profile-contact').textContent = beneficiary.contact || '—';
+      document.getElementById('profile-location').textContent = [beneficiary.village_name, beneficiary.tehsil, beneficiary.district].filter(Boolean).join(', ') || '—';
+      document.getElementById('profile-household').textContent = beneficiary.household_size ? `${beneficiary.household_size} members` : '—';
+      document.getElementById('profile-income').textContent = beneficiary.income_source || '—';
+      document.getElementById('profile-monthly-income').textContent = formatCurrency(beneficiary.monthly_income);
+      document.getElementById('profile-housing').textContent = beneficiary.housing_type || '—';
+      document.getElementById('profile-registered').textContent = formatDate(beneficiary.created_at);
+
+      const needsContainer = document.getElementById('profile-needs-container');
+      needsContainer.innerHTML = `<div class="profile-needs-title">Identified Needs</div><div class="needs-tags">${renderNeedsTags(beneficiary.needs)}</div>`;
+      if (!beneficiary.notes) {
+        document.getElementById('profile-notes').innerHTML = '<strong style="color:var(--text-dark)">Field Worker Notes:</strong><br/>No additional notes available.';
+      } else {
+        document.getElementById('profile-notes').innerHTML = `<strong style="color:var(--text-dark)">Field Worker Notes:</strong><br/>${escapeHtml(beneficiary.notes)}`;
+      }
+
+      const aidHistory = await loadAidHistory(id);
+      if (aidHistory.length > 0) {
+        document.getElementById('profile-last-aid-date').textContent = formatDate(aidHistory[0].distribution_date);
+      } else {
+        document.getElementById('profile-last-aid-date').textContent = '—';
+      }
+
+      await loadFamily(id);
+      await loadStats(id);
+      showView('profile');
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load beneficiary profile.');
+    }
+  }
+
+  function computeAge(dob) {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    if (Number.isNaN(birth.getTime())) return null;
+    return new Date().getFullYear() - birth.getFullYear();
+  }
+
+  async function loadAidHistory(id) {
+    try {
+      const response = await apiSend(`${API_BASE}/${id}/aid-history`);
+      const history = response?.data || [];
+      const container = document.getElementById('aid-history-list');
+
+      if (!history.length) {
+        container.innerHTML = '<div class="tl-item"><div class="tl-dot" style="background:var(--text-muted)"></div><div class="tl-card"><div class="tl-top"><div class="tl-title">No aid history available yet.</div></div></div></div>';
+        return [];
+      }
+
+      container.innerHTML = history
+        .map((item) => {
+          const statusClass = getStatusClass(item.status);
+          const itemTitle = `${escapeHtml(item.item_name)} × ${escapeHtml(item.quantity_given)}`;
+          return `
+            <div class="tl-item">
+              <div class="tl-dot" style="background:var(--green-light)"></div>
+              <div class="tl-card">
+                <div class="tl-top">
+                  <div class="tl-title">${itemTitle}</div>
+                  <span class="chip ${statusClass}">${escapeHtml(item.status || 'Delivered')}</span>
+                </div>
+                <div class="tl-body">Project: ${escapeHtml(item.project_name)} · Notes: ${escapeHtml(item.notes || 'No notes')}</div>
+                <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">${formatDate(item.distribution_date)}</div>
+              </div>
+            </div>`;
+        })
+        .join('');
+
+      return history;
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load aid history.');
+      return [];
+    }
+  }
+
+  async function loadFamily(id) {
+    try {
+      const response = await apiSend(`${API_BASE}/${id}/family`);
+      const family = response?.data || [];
+      const tbody = document.getElementById('family-tbody');
+
+      if (!family.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--text-muted)">No family members recorded.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = family
+        .map((member) => `
+          <tr>
+            <td><strong>${escapeHtml(member.name)}</strong></td>
+            <td>${escapeHtml(member.relation)}</td>
+            <td>${escapeHtml(member.age)}</td>
+            <td><span class="chip ${getStatusClass(member.status)}">${escapeHtml(member.status || '—')}</span></td>
+            <td>${escapeHtml(member.notes || '—')}</td>
+          </tr>`)
+        .join('');
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load family members.');
+    }
+  }
+
+  async function loadStats(id) {
+    try {
+      const response = await apiSend(`${API_BASE}/${id}/stats`);
+      const stats = response?.data || {};
+      document.getElementById('profile-aid-count').textContent = stats.aid_received ?? 0;
+      document.getElementById('profile-project-count').textContent = stats.projects_linked ?? 0;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function getLocationId() {
+    const region = document.getElementById('region').value.trim();
+    const district = document.getElementById('district').value.trim();
+    const village = document.getElementById('village-name').value.trim();
+    const tehsil = document.getElementById('tehsil').value.trim();
+    if (!district || !village) {
+      return null;
+    }
+
+    let candidates = locations.filter((loc) =>
+      String(loc.district || '').toLowerCase() === district.toLowerCase() &&
+      String(loc.village_name || '').toLowerCase() === village.toLowerCase()
+    );
+
+    if (region) {
+      candidates = candidates.filter((loc) => String(loc.region || '').toLowerCase() === region.toLowerCase());
+    }
+
+    if (!candidates.length) return null;
+    if (candidates.length === 1) return candidates[0].location_id;
+    const exact = candidates.find((loc) => String(loc.tehsil || '').toLowerCase() === tehsil.toLowerCase());
+    return exact ? exact.location_id : candidates[0].location_id;
+  }
+
+  async function openEditProfile(id = null) {
+    try {
+      const beneficiaryId = id || currentBeneficiaryId;
+      if (!beneficiaryId) {
+        clearForm();
+        currentBeneficiaryId = null;
+        showView('register');
+        return;
+      }
+
+      const response = await apiSend(`${API_BASE}/${beneficiaryId}`);
+      const beneficiary = response?.data;
+      if (!beneficiary) {
+        showToast('Unable to load beneficiary for editing.');
+        return;
+      }
+
+      currentBeneficiaryId = beneficiaryId;
+      fillForm(beneficiary);
+      showView('register');
+    } catch (error) {
+      console.error(error);
+      showToast('Unable to load beneficiary for editing.');
+    }
+  }
+
+  function fillForm(beneficiary) {
+    document.getElementById('full-name').value = beneficiary.full_name || '';
+    document.getElementById('cnic').value = beneficiary.cnic || '';
+    document.getElementById('date-of-birth').value = beneficiary.date_of_birth || '';
+    document.getElementById('gender').value = beneficiary.gender || '';
+    document.getElementById('marital-status').value = beneficiary.marital_status || '';
+    document.getElementById('contact-number').value = beneficiary.contact || '';
+    document.getElementById('household-size').value = beneficiary.household_size || '';
+    document.getElementById('children-count').value = beneficiary.children_count || '';
+    document.getElementById('dependents').value = beneficiary.dependents || '';
+    document.getElementById('income-source').value = beneficiary.income_source || '';
+    document.getElementById('monthly-income').value = beneficiary.monthly_income || '';
+    document.getElementById('housing-type').value = beneficiary.housing_type || '';
+    document.getElementById('region').value = beneficiary.region || '';
+    document.getElementById('district').value = beneficiary.district || '';
+    document.getElementById('tehsil').value = beneficiary.tehsil || '';
+    document.getElementById('village-name').value = beneficiary.village_name || '';
+    document.getElementById('gps-lat').value = beneficiary.gps_lat || '';
+    document.getElementById('gps-lng').value = beneficiary.gps_lng || '';
+    document.getElementById('notes').value = beneficiary.notes || '';
+
+    const needs = beneficiary.needs || [];
+    document.querySelectorAll('#needs-grid .need-checkbox').forEach((label) => {
+      const cb = label.querySelector('input[type="checkbox"]');
+      const isChecked = needs.includes(cb.value);
+      cb.checked = isChecked;
+      label.classList.toggle('checked', isChecked);
+    });
+  }
+
+  function clearForm() {
+    currentBeneficiaryId = null;
+    document.getElementById('full-name').value = '';
+    document.getElementById('cnic').value = '';
+    document.getElementById('date-of-birth').value = '';
+    document.getElementById('gender').value = '';
+    document.getElementById('marital-status').value = '';
+    document.getElementById('contact-number').value = '';
+    document.getElementById('household-size').value = '';
+    document.getElementById('children-count').value = '';
+    document.getElementById('dependents').value = '';
+    document.getElementById('income-source').value = '';
+    document.getElementById('monthly-income').value = '';
+    document.getElementById('housing-type').value = '';
+    document.getElementById('region').value = '';
+    document.getElementById('district').value = '';
+    document.getElementById('tehsil').value = '';
+    document.getElementById('village-name').value = '';
+    document.getElementById('gps-lat').value = '';
+    document.getElementById('gps-lng').value = '';
+    document.getElementById('notes').value = '';
+    document.querySelectorAll('#needs-grid .need-checkbox').forEach((label) => {
+      const cb = label.querySelector('input[type="checkbox"]');
+      cb.checked = false;
+      label.classList.remove('checked');
+    });
+  }
+
+  function getFormPayload() {
+    const payload = {
+      full_name: document.getElementById('full-name').value.trim(),
+      cnic: document.getElementById('cnic').value.trim(),
+      date_of_birth: document.getElementById('date-of-birth').value,
+      gender: document.getElementById('gender').value,
+      marital_status: document.getElementById('marital-status').value,
+      contact: document.getElementById('contact-number').value.trim(),
+      household_size: document.getElementById('household-size').value,
+      children_count: document.getElementById('children-count').value,
+      dependents: document.getElementById('dependents').value,
+      income_source: document.getElementById('income-source').value,
+      monthly_income: document.getElementById('monthly-income').value,
+      housing_type: document.getElementById('housing-type').value,
+      gps_lat: document.getElementById('gps-lat').value.trim(),
+      gps_lng: document.getElementById('gps-lng').value.trim(),
+      needs: Array.from(document.querySelectorAll('#needs-grid input[type="checkbox"]'))
+        .filter((cb) => cb.checked)
+        .map((cb) => cb.value),
+      notes: document.getElementById('notes').value.trim(),
+      status: 'Active',
+    };
+
+    const locationId = getLocationId();
+    if (locationId) {
+      payload.location_id = locationId;
+    }
+
+    if (!payload.full_name || !payload.cnic || !payload.household_size || !payload.income_source) {
+      throw new Error('Please fill in required fields: name, CNIC, household size and income source.');
+    }
+
+    if (!payload.location_id) {
+      throw new Error('Please select a valid district and village that matches an existing location.');
+    }
+
+    if (payload.needs.length === 0) {
+      delete payload.needs;
+    }
+
+    if (!payload.notes) {
+      delete payload.notes;
+    }
+
+    if (!payload.gps_lat) {
+      delete payload.gps_lat;
+    }
+
+    if (!payload.gps_lng) {
+      delete payload.gps_lng;
+    }
+
+    return payload;
+  }
+
+  async function saveAndReturn() {
+    try {
+      const payload = getFormPayload();
+      if (currentBeneficiaryId) {
+        await apiSend(`${API_BASE}/${currentBeneficiaryId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        showToast('Beneficiary updated successfully!');
+      } else {
+        await apiSend(API_BASE, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        showToast('Beneficiary registered successfully!');
+      }
+      await loadSummary();
+      await loadBeneficiaries();
+      clearForm();
+      showView('list');
+      currentBeneficiaryId = null;
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || 'Unable to save beneficiary.');
+    }
+  }
+
+  function showView(name) {
+    document.querySelectorAll('.view').forEach((view) => view.classList.remove('active'));
+    const target = document.getElementById('view-' + name);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (name === 'list') {
+      loadBeneficiaries();
+    }
   }
 
   function switchTab(btn, tabId) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach((button) => button.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach((content) => content.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(tabId).classList.add('active');
   }
@@ -1508,17 +1965,38 @@
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  function saveAndReturn() {
-    showView('list');
-    showToast('Beneficiary registered successfully!');
+  function showDeleteModal(id) {
+    deleteBeneficiaryId = id;
+    document.getElementById('delete-modal').classList.add('show');
   }
 
-  function showDeleteModal() { document.getElementById('delete-modal').classList.add('show'); }
-  function hideDeleteModal() { document.getElementById('delete-modal').classList.remove('show'); }
-
-  function filterTable(val) {
-    // Placeholder — connect to your API in backend
+  function hideDeleteModal() {
+    deleteBeneficiaryId = null;
+    document.getElementById('delete-modal').classList.remove('show');
   }
+
+  async function deleteBeneficiary() {
+    try {
+      if (!deleteBeneficiaryId) {
+        hideDeleteModal();
+        return;
+      }
+      await apiSend(`${API_BASE}/${deleteBeneficiaryId}`, { method: 'DELETE' });
+      showToast('Beneficiary record deleted.');
+      hideDeleteModal();
+      await loadSummary();
+      await loadBeneficiaries();
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || 'Unable to delete record.');
+    }
+  }
+
+  function filterTable() {
+    loadBeneficiaries();
+  }
+
+  window.addEventListener('DOMContentLoaded', initPage);
 </script>
 </body>
 </html>
