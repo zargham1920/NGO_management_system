@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Beneficiaries – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --purple: #7c3aed;
+    --purple-pale: #f5f3ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── SIDEBAR (same as dashboard) ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--green-deep);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+
+  .sidebar-brand {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .brand-logo-sm {
+    width: 36px; height: 36px;
+    background: var(--amber);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .brand-logo-sm svg { width: 20px; height: 20px; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+  .nav-section-label {
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3);
+    text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; cursor: pointer;
+    color: rgba(255,255,255,0.55); font-size: 13.5px;
+    transition: all 0.18s; margin-bottom: 2px; text-decoration: none;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+
+  .nav-item .badge {
+    margin-left: auto; background: var(--amber); color: var(--green-deep);
+    font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px;
+  }
+
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+
+  .user-card {
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+    border-radius: 10px; cursor: pointer; transition: background 0.15s;
+  }
+
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+
+  .avatar {
+    width: 34px; height: 34px; background: var(--green-light);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0;
+  }
+
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  .btn-primary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 18px; border-radius: 10px; border: none;
+    background: var(--green-deep); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+
+  .btn-secondary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+
+  /* ── CONTENT ── */
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px; flex-wrap: wrap;
+  }
+
+  .search-input-wrap {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; background: var(--bg);
+    border: 1.5px solid var(--border); border-radius: 10px;
+    flex: 1; min-width: 200px;
+  }
+
+  .search-input-wrap input {
+    border: none; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text-dark); outline: none; width: 100%;
+  }
+
+  .search-input-wrap input::placeholder { color: #aaa; }
+
+  select {
+    padding: 9px 14px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-dark); background: var(--white);
+    outline: none; cursor: pointer; transition: border-color 0.15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  select:focus { border-color: var(--green-mid); }
+
+  .filter-count {
+    font-size: 12px; color: var(--text-muted);
+    white-space: nowrap; margin-left: auto;
+  }
+
+  /* ── SUMMARY CHIPS ── */
+  .summary-chips {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+
+  .s-chip {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+  }
+
+  .s-chip-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text-dark); }
+  .s-chip-label { font-size: 12px; color: var(--text-muted); }
+
+  /* ── TABLE ── */
+  .table-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted);
+    padding: 12px 16px; text-align: left;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s; cursor: pointer;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f9f7f3; }
+
+  tbody td { padding: 13px 16px; font-size: 13px; color: var(--text-dark); vertical-align: middle; }
+
+  .beneficiary-cell { display: flex; align-items: center; gap: 10px; }
+
+  .b-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .b-name { font-weight: 600; font-size: 13px; }
+  .b-cnic { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .chip {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+  .chip-purple { background: var(--purple-pale); color: var(--purple); }
+  .chip-gray { background: #f0ede8; color: #666; }
+
+  .needs-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .need-tag {
+    font-size: 10px; padding: 2px 8px;
+    border-radius: 20px; font-weight: 500;
+    background: var(--bg); color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .action-btns { display: flex; gap: 6px; }
+
+  .icon-action {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; color: var(--text-muted);
+  }
+
+  .icon-action:hover { border-color: var(--green-mid); color: var(--green-mid); background: var(--green-pale); }
+  .icon-action.danger:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+
+  /* Pagination */
+  .pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    font-size: 13px; color: var(--text-muted);
+  }
+
+  .page-btns { display: flex; gap: 6px; }
+
+  .page-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .page-btn:hover, .page-btn.active {
+    border-color: var(--green-mid); color: var(--green-mid);
+    background: var(--green-pale);
+  }
+
+  /* ── REGISTER FORM ── */
+  .form-page-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
+  }
+
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; color: var(--text-muted);
+  }
+
+  .back-btn:hover { border-color: var(--green-mid); color: var(--green-mid); }
+
+  .form-page-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; }
+  .form-page-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .form-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 20px;
+  }
+
+  .form-section-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg);
+  }
+
+  .section-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+
+  .form-section-header h3 { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+  .form-section-header p { font-size: 12px; color: var(--text-muted); }
+
+  .form-body { padding: 24px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .full-width { grid-column: 1 / -1; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.8px;
+  }
+
+  .required-star { color: var(--red); margin-left: 2px; }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-dark);
+    background: var(--white); outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.08);
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: #bbb; }
+
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .form-hint { font-size: 11px; color: var(--text-muted); }
+
+  /* Needs checkboxes */
+  .needs-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+
+  .need-checkbox {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border: 1.5px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all 0.15s;
+    font-size: 13px;
+  }
+
+  .need-checkbox:hover { border-color: var(--green-mid); background: rgba(45,106,79,0.04); }
+  .need-checkbox input[type="checkbox"] { accent-color: var(--green-mid); width: 15px; height: 15px; }
+
+  .need-checkbox.checked { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-mid); font-weight: 500; }
+
+  /* Form footer */
+  .form-footer {
+    display: flex; justify-content: flex-end; gap: 12px;
+    padding: 20px 24px; background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-cancel {
+    padding: 10px 20px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 500; color: var(--text-muted); cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-cancel:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-save {
+    padding: 10px 24px; border-radius: 10px; border: none;
+    background: var(--green-deep); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: #fff;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .btn-save:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+
+  /* ── PROFILE VIEW ── */
+  .profile-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+
+  .profile-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+
+  .profile-banner {
+    height: 80px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    position: relative;
+  }
+
+  .profile-avatar-wrap {
+    position: absolute; bottom: -28px; left: 24px;
+  }
+
+  .profile-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 3px solid var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: var(--green-deep);
+    background: var(--green-light);
+  }
+
+  .profile-info { padding: 40px 24px 24px; }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--text-dark); margin-bottom: 4px;
+  }
+
+  .profile-id { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+
+  .profile-detail-row {
+    display: flex; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .profile-detail-row:last-child { border-bottom: none; }
+  .pd-label { color: var(--text-muted); font-size: 12px; }
+  .pd-value { font-weight: 500; color: var(--text-dark); text-align: right; }
+
+  .profile-needs { margin-top: 16px; }
+  .profile-needs-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; }
+
+  .need-tag-lg {
+    display: inline-block; padding: 5px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: 500;
+    margin: 3px 3px 3px 0;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex; gap: 4px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 6px;
+    margin-bottom: 16px; width: fit-content;
+  }
+
+  .tab-btn {
+    padding: 8px 18px; border-radius: 8px;
+    border: none; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 500; color: var(--text-muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    background: var(--green-deep); color: #fff; font-weight: 600;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+
+  /* Aid history timeline */
+  .timeline { position: relative; padding-left: 24px; }
+
+  .timeline::before {
+    content: ''; position: absolute;
+    left: 6px; top: 8px; bottom: 8px;
+    width: 2px; background: var(--border);
+  }
+
+  .tl-item {
+    position: relative; margin-bottom: 20px;
+  }
+
+  .tl-dot {
+    position: absolute; left: -24px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--white);
+    box-shadow: 0 0 0 2px var(--border);
+  }
+
+  .tl-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+  }
+
+  .tl-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .tl-title { font-weight: 600; font-size: 13px; }
+  .tl-date { font-size: 11px; color: var(--text-muted); }
+  .tl-body { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Stats in profile */
+  .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+  .p-stat {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; text-align: center;
+  }
+
+  .p-stat-num { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--text-dark); }
+  .p-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Success toast */
+  .toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: var(--green-deep); color: #fff;
+    padding: 14px 20px; border-radius: 12px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    display: flex; align-items: center; gap: 10px;
+    z-index: 999;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Modal overlay for delete */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200; display: none;
+    align-items: center; justify-content: center;
+  }
+
+  .overlay.show { display: flex; }
+
+  .modal {
+    background: var(--white); border-radius: 16px;
+    padding: 32px; max-width: 400px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 10px; }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+  .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .btn-danger {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    background: var(--red); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 600; cursor: pointer; transition: all 0.15s;
+  }
+
+  .btn-danger:hover { background: #a93226; }
+
+  @media (max-width: 1100px) {
+    .profile-layout { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.three { grid-template-columns: 1fr 1fr; }
+    .needs-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item active" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+      <span class="badge">20K</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Aid Distribution
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">AM</div>
+      <div>
+        <div class="user-name">Ayesha Malik</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Beneficiary Management</h1>
+      <p>Module 1 — Social Mapping & Needs Assessment</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-secondary" onclick="alert('Exporting CSV...')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+      <button class="btn-primary" onclick="showView('register')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Register Beneficiary
+      </button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- VIEW 1: LIST                               -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="view active" id="view-list">
+
+      <!-- Summary chips -->
+      <div class="summary-chips">
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--green-light)"></div>
+          <div>
+            <div class="s-chip-num">20,847</div>
+            <div class="s-chip-label">Total Registered</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--amber)"></div>
+          <div>
+            <div class="s-chip-num">4,210</div>
+            <div class="s-chip-label">Active Aid Recipients</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--blue)"></div>
+          <div>
+            <div class="s-chip-num">312</div>
+            <div class="s-chip-label">New This Month</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--red)"></div>
+          <div>
+            <div class="s-chip-num">89</div>
+            <div class="s-chip-label">High-Priority Cases</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search by name, CNIC, or village…" oninput="filterTable(this.value)"/>
+        </div>
+        <select onchange="filterTable()">
+          <option value="">All Districts</option>
+          <option>Tharparkar</option>
+          <option>Lasbela</option>
+          <option>Kech</option>
+          <option>Khairpur</option>
+          <option>Cholistan</option>
+        </select>
+        <select onchange="filterTable()">
+          <option value="">All Genders</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+        <select onchange="filterTable()">
+          <option value="">All Statuses</option>
+          <option>Active</option>
+          <option>Inactive</option>
+          <option>High Priority</option>
+        </select>
+        <select onchange="filterTable()">
+          <option value="">All Needs</option>
+          <option>Clean Water</option>
+          <option>Education</option>
+          <option>Healthcare</option>
+          <option>Food Security</option>
+          <option>Shelter</option>
+        </select>
+        <span class="filter-count">Showing <strong>8</strong> of 20,847</span>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" style="accent-color:var(--green-mid)" />
+                </th>
+                <th>Beneficiary</th>
+                <th>Village / District</th>
+                <th>Household</th>
+                <th>Income Source</th>
+                <th>Needs</th>
+                <th>Status</th>
+                <th>Last Aid</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="beneficiary-tbody">
+              <tr onclick="showProfile(0)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#d8f3dc;color:#2d6a4f">AK</div>
+                    <div>
+                      <div class="b-name">Ahmed Khan</div>
+                      <div class="b-cnic">42301-1234567-1</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Mithi, <span style="color:var(--text-muted)">Tharparkar</span></td>
+                <td>6 members</td>
+                <td>Agriculture</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">💧 Water</span>
+                    <span class="need-tag">🏥 Health</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-green">Active</span></td>
+                <td>22 May 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" title="View Profile" onclick="showProfile(0)">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <div class="icon-action" title="Edit" onclick="showView('register')">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    <div class="icon-action danger" title="Delete" onclick="showDeleteModal()">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="showProfile(1)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#fdf3e1;color:#b7791f">FB</div>
+                    <div>
+                      <div class="b-name">Fatima Bibi</div>
+                      <div class="b-cnic">42301-7654321-2</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Turbat, <span style="color:var(--text-muted)">Kech</span></td>
+                <td>4 members</td>
+                <td>Daily Wage</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">📚 Education</span>
+                    <span class="need-tag">🌾 Food</span>
+                    <span class="need-tag">🏥 Health</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-red">High Priority</span></td>
+                <td>21 May 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" onclick="showProfile(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="icon-action" onclick="showView('register')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                    <div class="icon-action danger" onclick="showDeleteModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="showProfile(2)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#eff6ff;color:#2563eb">ZK</div>
+                    <div>
+                      <div class="b-name">Zaid Khan</div>
+                      <div class="b-cnic">42301-1122334-3</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Chachro, <span style="color:var(--text-muted)">Tharparkar</span></td>
+                <td>8 members</td>
+                <td>Livestock</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">💧 Water</span>
+                    <span class="need-tag">🏠 Shelter</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-amber">Inactive</span></td>
+                <td>10 Apr 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" onclick="showProfile(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="icon-action" onclick="showView('register')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                    <div class="icon-action danger" onclick="showDeleteModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="showProfile(0)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#f5f3ff;color:#7c3aed">NB</div>
+                    <div>
+                      <div class="b-name">Noor Bano</div>
+                      <div class="b-cnic">42301-9988776-4</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Khairpur, <span style="color:var(--text-muted)">Sindh</span></td>
+                <td>3 members</td>
+                <td>Small Business</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">🌾 Food</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-green">Active</span></td>
+                <td>19 May 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" onclick="showProfile(0)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="icon-action" onclick="showView('register')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                    <div class="icon-action danger" onclick="showDeleteModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="showProfile(1)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#fdecea;color:#c0392b">HR</div>
+                    <div>
+                      <div class="b-name">Hasan Rind</div>
+                      <div class="b-cnic">42301-5544332-5</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Lasbela, <span style="color:var(--text-muted)">Balochistan</span></td>
+                <td>5 members</td>
+                <td>Fisherman</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">💧 Water</span>
+                    <span class="need-tag">📚 Education</span>
+                    <span class="need-tag">🏠 Shelter</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-red">High Priority</span></td>
+                <td>18 May 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" onclick="showProfile(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="icon-action" onclick="showView('register')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                    <div class="icon-action danger" onclick="showDeleteModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="showProfile(2)">
+                <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+                <td>
+                  <div class="beneficiary-cell">
+                    <div class="b-avatar" style="background:#d8f3dc;color:#2d6a4f">MS</div>
+                    <div>
+                      <div class="b-name">Mariam Shar</div>
+                      <div class="b-cnic">42301-3344556-6</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Bhimber, <span style="color:var(--text-muted)">Punjab</span></td>
+                <td>2 members</td>
+                <td>Widow / Dependent</td>
+                <td>
+                  <div class="needs-tags">
+                    <span class="need-tag">🏥 Health</span>
+                    <span class="need-tag">🌾 Food</span>
+                  </div>
+                </td>
+                <td><span class="chip chip-red">High Priority</span></td>
+                <td>17 May 2026</td>
+                <td>
+                  <div class="action-btns" onclick="event.stopPropagation()">
+                    <div class="icon-action" onclick="showProfile(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="icon-action" onclick="showView('register')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                    <div class="icon-action danger" onclick="showDeleteModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span>Showing 1–8 of 20,847 beneficiaries</span>
+          <div class="page-btns">
+            <button class="page-btn">‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <span style="padding:0 4px;color:var(--text-muted)">…</span>
+            <button class="page-btn">2605</button>
+            <button class="page-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- VIEW 2: REGISTER FORM                      -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="view" id="view-register">
+      <div class="form-page-header">
+        <button class="back-btn" onclick="showView('list')" title="Back to list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div>
+          <h2>Register New Beneficiary</h2>
+          <p>Fill in all required fields. CNIC is mandatory and must be unique.</p>
+        </div>
+      </div>
+
+      <!-- Section 1: Personal Info -->
+      <div class="form-card">
+        <div class="form-section-header">
+          <div class="section-icon" style="background:var(--green-pale)">👤</div>
+          <div>
+            <h3>Personal Information</h3>
+            <p>Basic identity and demographic details</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name <span class="required-star">*</span></label>
+              <input type="text" placeholder="e.g. Ahmed Ali Khan"/>
+            </div>
+            <div class="form-group">
+              <label>CNIC Number <span class="required-star">*</span></label>
+              <input type="text" placeholder="XXXXX-XXXXXXX-X" maxlength="15"/>
+              <span class="form-hint">Format: 42301-1234567-1 (must be unique)</span>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date"/>
+            </div>
+            <div class="form-group">
+              <label>Gender <span class="required-star">*</span></label>
+              <select>
+                <option value="">Select gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Marital Status</label>
+              <select>
+                <option value="">Select status</option>
+                <option>Married</option>
+                <option>Single</option>
+                <option>Widowed</option>
+                <option>Divorced</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Contact Number</label>
+              <input type="tel" placeholder="e.g. 0333-1234567"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Household Info -->
+      <div class="form-card">
+        <div class="form-section-header">
+          <div class="section-icon" style="background:var(--amber-pale)">🏠</div>
+          <div>
+            <h3>Household Information</h3>
+            <p>Family composition and economic status</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid three">
+            <div class="form-group">
+              <label>Household Size <span class="required-star">*</span></label>
+              <input type="number" placeholder="e.g. 6" min="1" max="30"/>
+            </div>
+            <div class="form-group">
+              <label>No. of Children</label>
+              <input type="number" placeholder="e.g. 3" min="0"/>
+            </div>
+            <div class="form-group">
+              <label>No. of Dependents</label>
+              <input type="number" placeholder="e.g. 2" min="0"/>
+            </div>
+            <div class="form-group">
+              <label>Primary Income Source <span class="required-star">*</span></label>
+              <select>
+                <option value="">Select source</option>
+                <option>Agriculture</option>
+                <option>Livestock</option>
+                <option>Daily Wage</option>
+                <option>Fisherman</option>
+                <option>Small Business</option>
+                <option>Government Employee</option>
+                <option>Widow / Dependent</option>
+                <option>Remittance</option>
+                <option>None</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monthly Income (PKR)</label>
+              <input type="number" placeholder="e.g. 15000"/>
+            </div>
+            <div class="form-group">
+              <label>Housing Type</label>
+              <select>
+                <option value="">Select type</option>
+                <option>Permanent (Pucca)</option>
+                <option>Semi-permanent</option>
+                <option>Temporary (Katcha)</option>
+                <option>Tent / Shelter</option>
+                <option>No Shelter</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Location -->
+      <div class="form-card">
+        <div class="form-section-header">
+          <div class="section-icon" style="background:var(--blue-pale)">📍</div>
+          <div>
+            <h3>Location Details</h3>
+            <p>Geographic mapping for field operations</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid three">
+            <div class="form-group">
+              <label>Province <span class="required-star">*</span></label>
+              <select>
+                <option value="">Select province</option>
+                <option>Sindh</option>
+                <option>Balochistan</option>
+                <option>Punjab</option>
+                <option>KPK</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>District <span class="required-star">*</span></label>
+              <select>
+                <option value="">Select district</option>
+                <option>Tharparkar</option>
+                <option>Lasbela</option>
+                <option>Kech</option>
+                <option>Khairpur</option>
+                <option>Cholistan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tehsil</label>
+              <input type="text" placeholder="e.g. Mithi"/>
+            </div>
+            <div class="form-group">
+              <label>Village Name <span class="required-star">*</span></label>
+              <input type="text" placeholder="e.g. Darbelo"/>
+            </div>
+            <div class="form-group">
+              <label>GPS Latitude</label>
+              <input type="text" placeholder="e.g. 24.7136"/>
+            </div>
+            <div class="form-group">
+              <label>GPS Longitude</label>
+              <input type="text" placeholder="e.g. 69.5560"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Needs Assessment -->
+      <div class="form-card">
+        <div class="form-section-header">
+          <div class="section-icon" style="background:var(--red-pale)">⚠️</div>
+          <div>
+            <h3>Needs Assessment</h3>
+            <p>Select all vulnerabilities that apply to this household</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="needs-grid">
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 💧 Lack of Clean Water
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 📚 Out-of-School Children
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 🏥 No Healthcare Access
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 🌾 Food Insecurity
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 🏠 Inadequate Shelter
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> ⚡ No Electricity
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 💼 Unemployment
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> 👩 Widow / Female-headed
+            </label>
+            <label class="need-checkbox" onclick="toggleNeed(this)">
+              <input type="checkbox"/> ♿ Disability in Household
+            </label>
+          </div>
+          <div class="form-group" style="margin-top:16px">
+            <label>Additional Notes</label>
+            <textarea placeholder="Describe any specific vulnerabilities, medical conditions, or urgent needs…"></textarea>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-cancel" onclick="showView('list')">Cancel</button>
+          <button class="btn-save" onclick="saveAndReturn()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Save Beneficiary
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- VIEW 3: PROFILE                            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="view" id="view-profile">
+      <div class="form-page-header">
+        <button class="back-btn" onclick="showView('list')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div style="flex:1">
+          <h2 id="profile-name-h">Ahmed Khan</h2>
+          <p>Beneficiary Profile · ID #1042</p>
+        </div>
+        <button class="btn-secondary" onclick="showView('register')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Profile
+        </button>
+        <button class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          Log Aid Distribution
+        </button>
+      </div>
+
+      <div class="profile-layout">
+        <!-- Left: Identity card -->
+        <div>
+          <div class="profile-card" style="margin-bottom:16px">
+            <div class="profile-banner">
+              <div class="profile-avatar-wrap">
+                <div class="profile-avatar" id="profile-avatar">AK</div>
+              </div>
+            </div>
+            <div class="profile-info">
+              <div class="profile-name" id="profile-fullname">Ahmed Khan</div>
+              <div class="profile-id">CNIC: 42301-1234567-1</div>
+              <span class="chip chip-green">Active</span>
+
+              <div style="margin-top:16px">
+                <div class="profile-detail-row">
+                  <span class="pd-label">Gender</span>
+                  <span class="pd-value">Male</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Age</span>
+                  <span class="pd-value">38 years</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Marital Status</span>
+                  <span class="pd-value">Married</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Contact</span>
+                  <span class="pd-value">0333-1234567</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Village</span>
+                  <span class="pd-value">Mithi, Tharparkar</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Household Size</span>
+                  <span class="pd-value">6 members</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Income Source</span>
+                  <span class="pd-value">Agriculture</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Monthly Income</span>
+                  <span class="pd-value">₨18,000</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Housing</span>
+                  <span class="pd-value">Katcha (Temporary)</span>
+                </div>
+                <div class="profile-detail-row">
+                  <span class="pd-label">Registered On</span>
+                  <span class="pd-value">12 Jan 2024</span>
+                </div>
+              </div>
+
+              <div class="profile-needs">
+                <div class="profile-needs-title">Identified Needs</div>
+                <span class="need-tag-lg chip-red">💧 Clean Water</span>
+                <span class="need-tag-lg chip-amber">🏥 Healthcare</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: tabs -->
+        <div>
+          <!-- Stats row -->
+          <div class="profile-stats">
+            <div class="p-stat">
+              <div class="p-stat-num">7</div>
+              <div class="p-stat-label">Aid Received</div>
+            </div>
+            <div class="p-stat">
+              <div class="p-stat-num">₨42K</div>
+              <div class="p-stat-label">Total Value</div>
+            </div>
+            <div class="p-stat">
+              <div class="p-stat-num">3</div>
+              <div class="p-stat-label">Projects Linked</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'tab-history')">Aid History</button>
+            <button class="tab-btn" onclick="switchTab(this,'tab-needs')">Needs Assessment</button>
+            <button class="tab-btn" onclick="switchTab(this,'tab-family')">Family Members</button>
+          </div>
+
+          <!-- Aid History -->
+          <div class="tab-content active" id="tab-history">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot" style="background:var(--green-light)"></div>
+                <div class="tl-card">
+                  <div class="tl-top">
+                    <div class="tl-title">Solar Water Filter × 1</div>
+                    <span class="chip chip-green">Delivered</span>
+                  </div>
+                  <div class="tl-body">Project: Pani Project · Distributed by: Field Worker Tariq · Value: ₨8,500</div>
+                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">22 May 2026</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:var(--amber)"></div>
+                <div class="tl-card">
+                  <div class="tl-top">
+                    <div class="tl-title">Medical Kit × 2</div>
+                    <span class="chip chip-green">Delivered</span>
+                  </div>
+                  <div class="tl-body">Project: Health First · Distributed by: Dr. Sana Mirza · Value: ₨3,200</div>
+                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">10 Mar 2026</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:var(--blue)"></div>
+                <div class="tl-card">
+                  <div class="tl-top">
+                    <div class="tl-title">Wheat Bags × 10</div>
+                    <span class="chip chip-green">Delivered</span>
+                  </div>
+                  <div class="tl-body">Project: Food Security · Funded by: Aga Khan Foundation · Value: ₨12,000</div>
+                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">15 Jan 2026</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot" style="background:var(--green-light)"></div>
+                <div class="tl-card">
+                  <div class="tl-top">
+                    <div class="tl-title">School Supplies × 3</div>
+                    <span class="chip chip-green">Delivered</span>
+                  </div>
+                  <div class="tl-body">Project: Literacy First · For 3 children in household · Value: ₨4,500</div>
+                  <div class="tl-date" style="margin-top:6px;font-size:11px;color:var(--text-muted)">20 Aug 2025</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Needs Assessment tab -->
+          <div class="tab-content" id="tab-needs">
+            <div class="form-card">
+              <div class="form-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div style="padding:14px;border-radius:12px;border:2px solid var(--green-mid);background:var(--green-pale)">
+                    <div style="font-size:20px;margin-bottom:6px">💧</div>
+                    <div style="font-weight:600;font-size:13px;color:var(--green-mid)">Clean Water</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">No access to clean piped water. Relies on a distant well.</div>
+                    <div style="margin-top:8px"><span class="chip chip-red">Critical</span></div>
+                  </div>
+                  <div style="padding:14px;border-radius:12px;border:2px solid var(--amber);background:var(--amber-pale)">
+                    <div style="font-size:20px;margin-bottom:6px">🏥</div>
+                    <div style="font-weight:600;font-size:13px;color:#b7791f">Healthcare</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Nearest clinic is 45 km away. Child has chronic illness.</div>
+                    <div style="margin-top:8px"><span class="chip chip-amber">High</span></div>
+                  </div>
+                </div>
+                <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:12px;font-size:13px;color:var(--text-muted);line-height:1.7">
+                  <strong style="color:var(--text-dark)">Field Worker Notes:</strong><br/>
+                  Family visited on 15 Jan 2026. Father is primary earner through seasonal farming. Eldest son (16) dropped out of school to assist. Mother reports recurring chest illness in youngest child (4 yrs). Urgent medical intervention recommended.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Members tab -->
+          <div class="tab-content" id="tab-family">
+            <div class="table-card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Relation</th>
+                    <th>Age</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Zainab Ahmed</strong></td>
+                    <td>Wife</td>
+                    <td>34</td>
+                    <td><span class="chip chip-green">Healthy</span></td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bilal Ahmed</strong></td>
+                    <td>Son</td>
+                    <td>16</td>
+                    <td><span class="chip chip-amber">Out of School</span></td>
+                    <td>Dropped out Grade 9</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Sara Ahmed</strong></td>
+                    <td>Daughter</td>
+                    <td>12</td>
+                    <td><span class="chip chip-green">In School</span></td>
+                    <td>Grade 6, mobile school</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Hamza Ahmed</strong></td>
+                    <td>Son</td>
+                    <td>4</td>
+                    <td><span class="chip chip-red">Ill</span></td>
+                    <td>Chronic chest illness</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- DELETE MODAL -->
+<div class="overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete Beneficiary?</h3>
+    <p>This will permanently remove this beneficiary and all associated records from the system. This action cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="hideDeleteModal(); showToast('Beneficiary record deleted.')">Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Beneficiary saved successfully!</span>
+</div>
+
+<script>
+  const profiles = [
+    { name: 'Ahmed Khan', initials: 'AK' },
+    { name: 'Fatima Bibi', initials: 'FB' },
+    { name: 'Zaid Khan',   initials: 'ZK' },
+  ];
+
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showProfile(idx) {
+    const p = profiles[idx] || profiles[0];
+    document.getElementById('profile-name-h').textContent = p.name;
+    document.getElementById('profile-fullname').textContent = p.name;
+    document.getElementById('profile-avatar').textContent = p.initials;
+    showView('profile');
+  }
+
+  function switchTab(btn, tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  function toggleNeed(el) {
+    el.classList.toggle('checked');
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg || 'Beneficiary saved successfully!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function saveAndReturn() {
+    showView('list');
+    showToast('Beneficiary registered successfully!');
+  }
+
+  function showDeleteModal() { document.getElementById('delete-modal').classList.add('show'); }
+  function hideDeleteModal() { document.getElementById('delete-modal').classList.remove('show'); }
+
+  function filterTable(val) {
+    // Placeholder — connect to your API in backend
+  }
+</script>
+</body>
+</html>

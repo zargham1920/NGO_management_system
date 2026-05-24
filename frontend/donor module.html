@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Donor Architecture – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR STUB TO MATCH GRAPHICS */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  
+  .content { padding: 28px 32px; flex: 1; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* KPI CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 200px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CONTROL BAR */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .search-input-wrap { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; flex: 1; }
+  .search-input-wrap input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; width: 100%; }
+  select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--white); outline: none; cursor: pointer; }
+
+  /* TABLES */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+
+  /* FORMS & PROFILES */
+  .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .form-section-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg); }
+  .form-body { padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dark); }
+  .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-mid); outline: none; }
+  .form-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 24px; background: var(--bg); border-top: 1px solid var(--border); }
+
+  /* TWO COL DETAILS VIEW */
+  .profile-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+  .donor-bio-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; }
+  .donor-avatar { width: 64px; height: 64px; background: var(--amber-pale); color: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 16px; }
+  .donor-name-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .meta-list { text-align: left; margin-top: 20px; }
+  .meta-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+  .meta-item:last-child { border-bottom: none; }
+
+  /* TIMELINE TRACK */
+  .timeline { position: relative; padding-left: 24px; margin-top: 16px; }
+  .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-dot { position: absolute; left: -22px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--green-mid); border: 2px solid var(--white); }
+  .timeline-header { display: flex; justify-content: space-between; font-weight: 600; font-size: 13.5px; }
+  .timeline-body { color: var(--text-muted); font-size: 12.5px; margin-top: 4px; }
+
+  /* TOAST SYSTEM */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name-sm">Umeed-e-Sahar</div>
+    <div class="brand-tag">Foundation RDMS</div>
+  </div>
+  <div class="sidebar-nav">
+    <a class="nav-item" href="#">📊 Dashboard</a>
+    <a class="nav-item" href="#">👥 Beneficiaries</a>
+    <a class="nav-item active" href="#">💰 Donor Architecture</a>
+    <a class="nav-item" href="#">📦 Warehouse Inventory</a>
+    <a class="nav-item" href="#">🚰 Aid Distribution</a>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Donor Architecture</h1>
+      <p id="page-subtitle">Tracking philanthropic relationships and capital tracking accounts</p>
+    </div>
+    <div class="topbar-right" id="topbar-actions">
+      <button class="btn-primary" onclick="showView('add-donor')">＋ Register Donor</button>
+      <button class="btn-secondary" onclick="showView('log-donation')">💸 Log Transaction</button>
+    </div>
+  </header>
+
+  <div class="content">
+    
+    <div id="view-list" class="view active">
+      <div class="summary-chips">
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">₨18.4M</div>
+            <div class="s-chip-label">Total Capital Raised</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">142</div>
+            <div class="s-chip-label">Registered Foundations</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">₨3.1M</div>
+            <div class="s-chip-label">Unallocated Pipeline</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <input type="text" placeholder="Search donors by organization name, email, or country..." />
+        </div>
+        <select>
+          <option>All Organization Types</option>
+          <option>NGO / Institutional</option>
+          <option>Corporate Sponsors</option>
+          <option>Individual Donors</option>
+        </select>
+        <select>
+          <option>All Countries</option>
+          <option>Pakistan</option>
+          <option>United Kingdom</option>
+          <option>United States</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Donor Organization</th>
+              <th>Classification</th>
+              <th>Primary Contact</th>
+              <th>Country Axis</th>
+              <th>Active Commitments</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="viewDonorProfile('Aga Khan Foundation', 'NGO', 'Pakistan')">
+              <td><strong>Aga Khan Foundation</strong><br><span style="font-size:11px;color:var(--text-muted)">info@akf.org</span></td>
+              <td><span class="chip chip-blue">NGO</span></td>
+              <td>+92 51 111-253</td>
+              <td>Pakistan</td>
+              <td><strong>₨4,500,000</strong></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;">View Ledger</button></td>
+            </tr>
+            <tr onclick="viewDonorProfile('Zakat Foundation', 'NGO', 'Pakistan')">
+              <td><strong>Zakat Foundation</strong><br><span style="font-size:11px;color:var(--text-muted)">zakat@zf.org</span></td>
+              <td><span class="chip chip-blue">NGO</span></td>
+              <td>+92 21 345-678</td>
+              <td>Pakistan</td>
+              <td><strong>₨2,800,000</strong></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;">View Ledger</button></td>
+            </tr>
+            <tr onclick="viewDonorProfile('Siddiqsons Group', 'Corporate', 'Pakistan')">
+              <td><strong>Siddiqsons Group</strong><br><span style="font-size:11px;color:var(--text-muted)">csr@siddiqsons.com</span></td>
+              <td><span class="chip chip-green">Corporate</span></td>
+              <td>+92 21 111-786</td>
+              <td>Pakistan</td>
+              <td><strong>₨5,000,000</strong></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;">View Ledger</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-add-donor" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Registry</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3>Create Donor Portfolio</h3>
+            <p>Establish corporate, NGO, or private financial records inside RDMS schema parameters</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Donor / Organization Name *</label>
+              <input type="text" placeholder="e.g. British Asian Trust" />
+            </div>
+            <div class="form-group">
+              <label>Donor Category Classification *</label>
+              <select>
+                <option>NGO</option>
+                <option>Corporate Sponsor</option>
+                <option>Individual Philanthropist</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Email Point-of-Contact (Unique) *</label>
+              <input type="email" placeholder="e.g. grants@batrust.org" />
+            </div>
+            <div class="form-group">
+              <label>Contact Phone Connection</label>
+              <input type="text" placeholder="e.g. +44 20 7549" />
+            </div>
+            <div class="form-group">
+              <label>Country Origin Domain *</label>
+              <input type="text" value="Pakistan" placeholder="e.g. United Kingdom" />
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Cancel</button>
+          <button class="btn-primary" onclick="triggerToast('Donor identity built successfully!')">Save Entity Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-log-donation" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Registry</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3>Log Direct Inbound Transaction</h3>
+            <p>Commit monetary transactions to corresponding ledger entries with strict validation rules</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Source Donor Record Account *</label>
+              <select>
+                <option>Aga Khan Foundation</option>
+                <option>Zakat Foundation</option>
+                <option>Siddiqsons Group</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transaction Capital Amount (PKR) *</label>
+              <input type="number" placeholder="₨ Amount in PKR" />
+            </div>
+            <div class="form-group">
+              <label>Execution Date Matrix *</label>
+              <input type="date" />
+            </div>
+            <div class="form-group">
+              <label>Remittance Channel Mechanism *</label>
+              <select>
+                <option>Bank Transfer</option>
+                <option>Cash Account</option>
+                <option>In-Kind Goods Registry</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Initial Allocation Allocation Strategy</label>
+              <select>
+                <option>Retain as Unallocated Reserve Pipeline</option>
+                <option>Pani Project - Tharparkar Water Axis</option>
+                <option>Literacy First - Mobile Tribal Units</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Cancel System Entry</button>
+          <button class="btn-primary" onclick="triggerToast('Transaction successfully captured and normalized!')">Execute Inbound Entry</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-profile" class="view">
+      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn-secondary" onclick="closeProfile()">← Back to Overview</button>
+        <button class="btn-primary" onclick="showView('log-donation')">💸 Append New Allocation</button>
+      </div>
+
+      <div class="profile-layout">
+        <div class="donor-bio-card">
+          <div class="donor-avatar" id="prof-avatar-box">AK</div>
+          <div class="donor-name-title" id="prof-title-name">Aga Khan Foundation</div>
+          <span class="chip chip-blue" id="prof-type-badge">NGO Profile</span>
+          
+          <div class="meta-list">
+            <div class="meta-item"><span>Origin</span><strong id="prof-country">Pakistan</strong></div>
+            <div class="meta-item"><span>Registered Email</span><span>info@akf.org</span></div>
+            <div class="meta-item"><span>Database Account Key</span><span>FK-DON-091</span></div>
+            <div class="meta-item"><span>Total Contributed</span><span style="color:var(--green-mid); font-weight:bold;">₨4,500,000</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div class="form-card">
+            <div class="form-section-header">
+              <h3>Normalized Transaction Audit Trail</h3>
+            </div>
+            <div class="form-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-header">
+                    <span>₨3,000,000 Bank Transfer</span>
+                    <span class="chip chip-green">Allocated</span>
+                  </div>
+                  <div class="timeline-body">
+                    Transferred on 2026-03-10 · Mapped fully into <strong>Pani Project (Lasbela Axis)</strong> pipeline.
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-header">
+                    <span>₨1,500,000 Bank Transfer</span>
+                    <span class="chip text-amber" style="background:var(--amber-pale)">Unallocated Reserve</span>
+                  </div>
+                  <div class="timeline-body">
+                    Transferred on 2026-05-02 · Sitting inside liquid framework pending project assignment schema triggers.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="toast" id="system-toast">
+  <span>✓</span> <span id="toast-text">Success confirmation message text.</span>
+</div>
+
+<script>
+  function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-list').style.display = 'none';
+    
+    const actions = document.getElementById('topbar-actions');
+    const subtitle = document.getElementById('page-subtitle');
+    const title = document.getElementById('page-title');
+
+    if(viewId === 'list') {
+      document.getElementById('view-list').classList.add('active');
+      title.textContent = "Donor Architecture";
+      subtitle.textContent = "Tracking philanthropic relationships and capital tracking accounts";
+      actions.style.display = 'flex';
+    } else {
+      document.getElementById('view-' + viewId).classList.add('active');
+      actions.style.display = 'none';
+      if(viewId === 'add-donor') {
+        title.textContent = "Register Portfolio";
+      } else if (viewId === 'log-donation') {
+        title.textContent = "Inbound Capital Entry";
+      }
+    }
+  }
+
+  function viewDonorProfile(name, type, country) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-profile').classList.add('active');
+    document.getElementById('topbar-actions').style.display = 'none';
+    
+    document.getElementById('page-title').textContent = "Donor Profile Insights";
+    document.getElementById('page-subtitle').textContent = "Granular audit matrices for individual institutional actors";
+    
+    document.getElementById('prof-title-name').textContent = name;
+    document.getElementById('prof-type-badge').textContent = type + " Entity Account";
+    document.getElementById('prof-country').textContent = country;
+    document.getElementById('prof-avatar-box').textContent = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+  }
+
+  function closeProfile() {
+    showView('list');
+  }
+
+  function triggerToast(message) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = message;
+    toast.className = "toast show";
+    setTimeout(() => {
+      toast.className = "toast";
+      showView('list');
+    }, 3000);
+  }
+</script>
+</body>
+</html>

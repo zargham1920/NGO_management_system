@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Warehouse Inventory Management – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR STUB */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  
+  .content { padding: 28px 32px; flex: 1; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SUMMARY CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 200px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CONTROL STRIP */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .search-input-wrap { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; flex: 1; }
+  .search-input-wrap input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; width: 100%; }
+  select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--white); outline: none; cursor: pointer; }
+
+  /* DATA STORAGE TABLE */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+
+  /* ARCHITECTURE FORMS */
+  .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .form-section-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg); }
+  .form-body { padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dark); }
+  .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-mid); outline: none; }
+  .form-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 24px; background: var(--bg); border-top: 1px solid var(--border); }
+
+  /* SYSTEM ALERTS */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name-sm">Umeed-e-Sahar</div>
+    <div class="brand-tag">Foundation RDMS</div>
+  </div>
+  <div class="sidebar-nav">
+    <a class="nav-item" href="#">📊 Dashboard</a>
+    <a class="nav-item" href="#">👥 Beneficiaries</a>
+    <a class="nav-item" href="#">💰 Donor Architecture</a>
+    <a class="nav-item active" href="#">📦 Warehouse Inventory</a>
+    <a class="nav-item" href="#">🚰 Aid Distribution</a>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Warehouse Inventory</h1>
+      <p id="page-subtitle">Logistical governance, emergency stockpiles, and distribution tracking controls</p>
+    </div>
+    <div class="topbar-right" id="topbar-actions">
+      <button class="btn-primary" onclick="showView('add-item')">＋ Provision Material Stock</button>
+      <button class="btn-secondary" onclick="showView('dispatch-stock')">📦 Record Aid Distribution</button>
+    </div>
+  </header>
+
+  <div class="content">
+    
+    <div id="view-list" class="view active">
+      <div class="summary-chips">
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">4,850</div>
+            <div class="s-chip-label">Total Items Warehoused</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">4</div>
+            <div class="s-chip-label">Active Supply Categories</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div>
+            <div class="s-chip-num">2 Items</div>
+            <div class="s-chip-label" style="color:var(--red); font-weight: 600;">Critical Threshold Warning</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <input type="text" placeholder="Search inventory records by item name or barcode schema..." />
+        </div>
+        <select>
+          <option>All Product Categories</option>
+          <option>Water Logistics / Pumps</option>
+          <option>Medical Emergency Kits</option>
+          <option>Educational Materials</option>
+          <option>Infrastructure Elements</option>
+        </select>
+        <select>
+          <option>All Stocking Tiers</option>
+          <option>In Stock (Healthy)</option>
+          <option>Low Volume Warnings</option>
+          <option>Depleted (Out of Stock)</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Item Identity Code</th>
+              <th>Product Category</th>
+              <th>Available Units</th>
+              <th>Assigned Allocation Project</th>
+              <th>Status Vector</th>
+              <th>Operational Alterations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Solar Powered Water Pump</strong><br><span style="font-size:11px;color:var(--text-muted)">Item ID: #INV-001</span></td>
+              <td>Water Logistics</td>
+              <td><strong>42 Units</strong></td>
+              <td>Pani Project (Tharparkar)</td>
+              <td><span class="chip chip-green">In Stock</span></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="adjustStock('Solar Powered Water Pump', 42)">Modify Levels</button></td>
+            </tr>
+            <tr>
+              <td><strong>Emergency First-Aid Kits</strong><br><span style="font-size:11px;color:var(--text-muted)">Item ID: #INV-024</span></td>
+              <td>Medical Emergency</td>
+              <td><strong>120 Units</strong></td>
+              <td><em>None - General Reserve</em></td>
+              <td><span class="chip chip-green">In Stock</span></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="adjustStock('Emergency First-Aid Kits', 120)">Modify Levels</button></td>
+            </tr>
+            <tr>
+              <td><strong>Primary Textbook Collections</strong><br><span style="font-size:11px;color:var(--text-muted)">Item ID: #INV-089</span></td>
+              <td>Educational Materials</td>
+              <td><strong>4 Units</strong></td>
+              <td>Literacy First Initiative</td>
+              <td><span class="chip chip-amber">Low Vol Vol</span></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="adjustStock('Primary Textbook Collections', 4)">Modify Levels</button></td>
+            </tr>
+            <tr>
+              <td><strong>Heavy Duty Infrastructure Tents</strong><br><span style="font-size:11px;color:var(--text-muted)">Item ID: #INV-102</span></td>
+              <td>Infrastructure Elements</td>
+              <td><strong>0 Units</strong></td>
+              <td>Emergency Flood Deployment</td>
+              <td><span class="chip chip-red">Depleted</span></td>
+              <td><button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="adjustStock('Heavy Duty Infrastructure Tents', 0)">Modify Levels</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-add-item" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Warehouse Ledger</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3>Provision New Asset Profile</h3>
+            <p>Declare and document items inside warehouse tables prior to logistical dispatches</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Item Descriptive Designation *</label>
+              <input type="text" placeholder="e.g. Reverse Osmosis Filters" />
+            </div>
+            <div class="form-group">
+              <label>Logistical Classification Core *</label>
+              <select>
+                <option>Water</option>
+                <option>Medical</option>
+                <option>Education</option>
+                <option>Infrastructure</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Initial Procurement Volume Count *</label>
+              <input type="number" placeholder="Value mapping constraints (e.g. 50)" />
+            </div>
+            <div class="form-group">
+              <label>Project Pre-Assignment Linkage (Optional)</label>
+              <select>
+                <option value="">Leave as Shared General Supply Depot</option>
+                <option>Pani Project - Solar Installation Segment</option>
+                <option>Literacy First - Mobile Tribal Units</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Discard Setup</button>
+          <button class="btn-primary" onclick="triggerToast('Item identity safely stored inside relational architecture.')">Initialize Asset Records</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-dispatch-stock" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Warehouse Ledger</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3>Log Aid Distribution Assignment</h3>
+            <p>Relational allocation: Subtract asset item levels while verifying recipient parameters</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Executing Development Project Focus *</label>
+              <select>
+                <option>Pani Project (Tharparkar)</option>
+                <option>Literacy First Initiative</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Target Beneficiary ID Profile *</label>
+              <select>
+                <option>Ahmed Ali (CNIC: 42301-1234567-1)</option>
+                <option>Fatima Bai (CNIC: 44103-9876543-2)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Dispatched Resource Asset Item *</label>
+              <select>
+                <option>Solar Powered Water Pump (Available: 42)</option>
+                <option>Emergency First-Aid Kits (Available: 120)</option>
+                <option>Primary Textbook Collections (Available: 4)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transferred Distribution Metric Volume *</label>
+              <input type="number" value="1" />
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Operational Distribution Notes</label>
+              <textarea placeholder="Specify unique operational conditions or tracking details..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Abort Handshake</button>
+          <button class="btn-primary" onclick="triggerToast('Distribution ledger written and stock constraints reduced.')">Authorize Resource Dispatch</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="toast" id="system-toast">
+  <span>✓</span> <span id="toast-text">Logistical execution finalized safely.</span>
+</div>
+
+<script>
+  function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-list').style.display = 'none';
+    
+    const actions = document.getElementById('topbar-actions');
+    const title = document.getElementById('page-title');
+    const subtitle = document.getElementById('page-subtitle');
+
+    if(viewId === 'list') {
+      document.getElementById('view-list').classList.add('active');
+      title.textContent = "Warehouse Inventory";
+      subtitle.textContent = "Logistical governance, emergency stockpiles, and distribution tracking controls";
+      actions.style.display = 'flex';
+    } else {
+      document.getElementById('view-' + viewId).classList.add('active');
+      actions.style.display = 'none';
+      if(viewId === 'add-item') {
+        title.textContent = "Provision Supply Profile";
+      } else if (viewId === 'dispatch-stock') {
+        title.textContent = "Execute Distribution Entry";
+      }
+    }
+  }
+
+  function adjustStock(itemName, currentStock) {
+    const newVal = prompt("Database Adjustment Trigger for [" + itemName + "]:\nEnter updated inventory total count:", currentStock);
+    if(newVal !== null && newVal !== "") {
+      document.getElementById('toast-text').textContent = "Updated inventory level saved successfully to database pipeline.";
+      const toast = document.getElementById('system-toast');
+      toast.className = "toast show";
+      setTimeout(() => toast.className = "toast", 3000);
+    }
+  }
+
+  function triggerToast(message) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = message;
+    toast.className = "toast show";
+    setTimeout(() => {
+      toast.className = "toast";
+      showView('list');
+    }, 3000);
+  }
+</script>
+</body>
+</html>
