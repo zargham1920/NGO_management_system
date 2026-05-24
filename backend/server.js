@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { testConnection } = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 const { seedAdmin } = require('./utils/seed');
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.get('/health', async (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Not found.' });

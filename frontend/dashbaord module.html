@@ -704,10 +704,10 @@
 
   <div class="sidebar-footer">
     <div class="user-card">
-      <div class="avatar">AM</div>
+      <div class="avatar" id="sidebar-avatar">AM</div>
       <div class="user-info">
-        <div class="user-name">Ayesha Malik</div>
-        <div class="user-role">NGO Admin</div>
+        <div class="user-name" id="sidebar-user-name">Ayesha Malik</div>
+        <div class="user-role" id="sidebar-user-role">NGO Admin</div>
       </div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
     </div>
@@ -720,7 +720,7 @@
   <header class="topbar">
     <div class="topbar-left">
       <h1>Dashboard</h1>
-      <p>Sunday, 24 May 2026 — Welcome back, Ayesha</p>
+      <p id="topbar-greeting">Sunday, 24 May 2026 — Welcome back, Ayesha</p>
     </div>
     <div class="topbar-right">
       <div class="search-bar">
@@ -746,7 +746,7 @@
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         </div>
-        <div class="stat-num">20,847</div>
+        <div class="stat-num" id="stat-beneficiaries">20,847</div>
         <div class="stat-label-card">Total Beneficiaries</div>
         <span class="stat-trend trend-up">↑ 3.2% this month</span>
       </div>
@@ -755,7 +755,7 @@
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <div class="stat-num">₨4.2M</div>
+        <div class="stat-num" id="stat-funds">₨4.2M</div>
         <div class="stat-label-card">Funds Raised (2026)</div>
         <span class="stat-trend trend-up">↑ 11% vs last year</span>
       </div>
@@ -764,7 +764,7 @@
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="stat-num">14</div>
+        <div class="stat-num" id="stat-projects">14</div>
         <div class="stat-label-card">Active Projects</div>
         <span class="stat-trend trend-up">↑ 2 new this month</span>
       </div>
@@ -773,7 +773,7 @@
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
         </div>
-        <div class="stat-num">312</div>
+        <div class="stat-num" id="stat-inventory">312</div>
         <div class="stat-label-card">Inventory Items Low</div>
         <span class="stat-trend trend-warn">⚠ Needs restock</span>
       </div>
@@ -802,54 +802,9 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="distribution-tbody">
               <tr>
-                <td><strong>Ahmed Ali</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #1042</span></td>
-                <td>Mithi, Tharparkar</td>
-                <td>Solar Water Filter (×1)</td>
-                <td>Pani Project</td>
-                <td>22 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Fatima Bibi</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #2108</span></td>
-                <td>Turbat, Kech</td>
-                <td>Medical Kit (×2)</td>
-                <td>Health First</td>
-                <td>21 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Zaid Khan</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #0887</span></td>
-                <td>Chachro, Tharparkar</td>
-                <td>School Kit (×5)</td>
-                <td>Literacy First</td>
-                <td>20 May 2026</td>
-                <td><span class="chip chip-amber">In Transit</span></td>
-              </tr>
-              <tr>
-                <td><strong>Noor Bano</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #3391</span></td>
-                <td>Khairpur, Sindh</td>
-                <td>Wheat Bag (×10)</td>
-                <td>Food Security</td>
-                <td>19 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Hasan Rind</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #4561</span></td>
-                <td>Lasbela, Balochistan</td>
-                <td>Solar Panel (×1)</td>
-                <td>Pani Project</td>
-                <td>18 May 2026</td>
-                <td><span class="chip chip-blue">Scheduled</span></td>
-              </tr>
-              <tr>
-                <td><strong>Mariam Shar</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #2230</span></td>
-                <td>Bhimber, Punjab</td>
-                <td>Medical Kit (×1)</td>
-                <td>Health First</td>
-                <td>17 May 2026</td>
-                <td><span class="chip chip-red">Delayed</span></td>
+                <td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px 0;">Loading recent distributions...</td>
               </tr>
             </tbody>
           </table>
@@ -865,51 +820,8 @@
           </div>
           <button class="btn-sm">Details</button>
         </div>
-        <div class="project-list">
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">💧 Pani Project</span>
-              <span class="proj-pct">78%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
-            <div class="proj-meta">
-              <span>₨1.56M used</span><span>of ₨2M</span>
-              <span class="chip chip-green" style="margin-left:auto">Active</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">📚 Literacy First</span>
-              <span class="proj-pct" style="color:var(--amber)">45%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill amber" style="width:45%"></div></div>
-            <div class="proj-meta">
-              <span>₨450K used</span><span>of ₨1M</span>
-              <span class="chip chip-green" style="margin-left:auto">Active</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">🏥 Health First</span>
-              <span class="proj-pct" style="color:var(--blue)">62%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill blue" style="width:62%"></div></div>
-            <div class="proj-meta">
-              <span>₨620K used</span><span>of ₨1M</span>
-              <span class="chip chip-amber" style="margin-left:auto">At Risk</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">🌾 Food Security</span>
-              <span class="proj-pct">91%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:91%"></div></div>
-            <div class="proj-meta">
-              <span>₨910K used</span><span>of ₨1M</span>
-              <span class="chip chip-red" style="margin-left:auto">Near Limit</span>
-            </div>
-          </div>
+        <div class="project-list" id="project-list">
+          <div class="project-item">Loading projects...</div>
         </div>
       </div>
     </div>
@@ -929,10 +841,8 @@
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green-mid)" stroke-width="1.5" opacity="0.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span style="font-size:12px; color: var(--green-mid); font-weight:500; opacity:0.7">Sindh · Balochistan · Punjab</span>
         </div>
-        <div style="padding: 0 16px 16px; display:flex; gap:16px; font-size:12px;">
-          <span>🟢 Sindh (12)</span>
-          <span>🟡 Balochistan (6)</span>
-          <span>🔵 Punjab (3)</span>
+        <div style="padding: 0 16px 16px; display:flex; gap:16px; font-size:12px;" id="coverage-summary">
+          <div style="flex:1;color:var(--text-muted);">Loading coverage details...</div>
         </div>
       </div>
 
@@ -946,19 +856,19 @@
             <div class="qa-icon" style="background:var(--green-pale)">👤</div>
             Register New Beneficiary
           </button>
-          <button class="qa-btn">
+          <button class="qa-btn" onclick="location.href='donor module.html'">
             <div class="qa-icon" style="background:var(--amber-pale)">💰</div>
             Record a Donation
           </button>
-          <button class="qa-btn">
+          <button class="qa-btn" onclick="location.href='inventory.html'">
             <div class="qa-icon" style="background:var(--blue-pale)">📦</div>
             Log Aid Distribution
           </button>
-          <button class="qa-btn">
+          <button class="qa-btn" onclick="location.href='volunteer module.html'">
             <div class="qa-icon" style="background:#f5f0ff">🙋</div>
             Add Volunteer
           </button>
-          <button class="qa-btn">
+          <button class="qa-btn" onclick="location.href='donor report module.html'">
             <div class="qa-icon" style="background:var(--red-pale)">📊</div>
             Generate Donor Report
           </button>
@@ -970,41 +880,9 @@
         <div class="card-header">
           <div><h2>Activity Feed</h2><p>Latest system events</p></div>
         </div>
-        <div class="activity-list">
+        <div class="activity-list" id="activity-list">
           <div class="activity-item">
-            <div class="act-dot act-green"></div>
-            <div>
-              <div class="act-text"><strong>Ahmed Ali</strong> registered as new beneficiary in Mithi village.</div>
-              <div class="act-time">10 min ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-amber"></div>
-            <div>
-              <div class="act-text">Donation of <strong>₨500,000</strong> received from Aga Khan Foundation.</div>
-              <div class="act-time">1 hr ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-blue"></div>
-            <div>
-              <div class="act-text">Volunteer <strong>Tariq Memon</strong> assigned to Pani Project, Lasbela.</div>
-              <div class="act-time">3 hrs ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-red"></div>
-            <div>
-              <div class="act-text"><strong>Solar Panels</strong> stock dropped below minimum threshold.</div>
-              <div class="act-time">5 hrs ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-green"></div>
-            <div>
-              <div class="act-text"><strong>Literacy First</strong> project milestone reached: 200 students enrolled.</div>
-              <div class="act-time">Yesterday</div>
-            </div>
+            <div class="act-text" style="width:100%;text-align:center;color:var(--text-muted);">Loading activity feed...</div>
           </div>
         </div>
       </div>
@@ -1012,6 +890,273 @@
 
   </div><!-- /content -->
 </main>
+
+<script>
+  const DASHBOARD_API = 'http://localhost:3000/api/dashboard';
+  const TOKEN_KEY = 'rdmsToken';
+  const USER_KEY = 'rdmsUser';
+
+  function getAuthToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  function getUser() {
+    try {
+      return JSON.parse(localStorage.getItem(USER_KEY));
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat('en-US').format(Number(value) || 0);
+  }
+
+  function formatCurrency(value) {
+    return `₨${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(value) || 0)}`;
+  }
+
+  function getStatusClass(status) {
+    const normalized = String(status || '').toLowerCase();
+    if (normalized === 'delivered') return 'chip-green';
+    if (normalized === 'in transit') return 'chip-amber';
+    if (normalized === 'scheduled') return 'chip-blue';
+    if (normalized === 'delayed') return 'chip-red';
+    return 'chip-gray';
+  }
+
+  function formatDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value || '');
+    return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function safeText(value) {
+    return value === null || value === undefined ? '' : String(value);
+  }
+
+  function redirectToLogin() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    window.location.href = 'login module.html';
+  }
+
+  async function apiGet(endpoint) {
+    const token = getAuthToken();
+    if (!token) {
+      redirectToLogin();
+      return null;
+    }
+
+    const response = await fetch(`${DASHBOARD_API}/${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      return null;
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Dashboard API request failed');
+    }
+    return data;
+  }
+
+  function updateUserDisplay() {
+    const user = getUser();
+    if (!user) return;
+
+    const name = user.name || user.email || 'User';
+    const initials = name
+      .split(' ')
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+    const role = user.role || '';
+
+    const avatar = document.getElementById('sidebar-avatar');
+    const sidebarName = document.getElementById('sidebar-user-name');
+    const sidebarRole = document.getElementById('sidebar-user-role');
+    const topbarGreeting = document.getElementById('topbar-greeting');
+
+    if (avatar) avatar.textContent = initials;
+    if (sidebarName) sidebarName.textContent = name;
+    if (sidebarRole) sidebarRole.textContent = role;
+    if (topbarGreeting) {
+      topbarGreeting.textContent = `${new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })} — Welcome back, ${name.split(' ')[0]}`;
+    }
+  }
+
+  function setLoading(selector, html) {
+    const element = document.querySelector(selector);
+    if (element) element.innerHTML = html;
+  }
+
+  function renderStats(data) {
+    const beneficiaries = document.getElementById('stat-beneficiaries');
+    const funds = document.getElementById('stat-funds');
+    const projects = document.getElementById('stat-projects');
+    const inventory = document.getElementById('stat-inventory');
+
+    if (beneficiaries) beneficiaries.textContent = formatNumber(data.total_beneficiaries);
+    if (funds) funds.textContent = formatCurrency(data.total_funds_pkr);
+    if (projects) projects.textContent = formatNumber(data.active_projects);
+    if (inventory) inventory.textContent = formatNumber(data.low_inventory_count);
+  }
+
+  function renderDistributions(items) {
+    const tbody = document.getElementById('distribution-tbody');
+    if (!tbody) return;
+
+    if (!items || items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px 0;">No recent distributions found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = items
+      .map((item) => `
+        <tr>
+          <td><strong>${safeText(item.beneficiary_name)}</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #${safeText(item.beneficiary_id)}</span></td>
+          <td>${safeText(item.village_name)}, ${safeText(item.district)}</td>
+          <td>${safeText(item.item_name)} (${safeText(item.quantity_given)})</td>
+          <td>${safeText(item.project_name)}</td>
+          <td>${formatDate(item.distribution_date)}</td>
+          <td><span class="chip ${getStatusClass(item.status)}">${safeText(item.status)}</span></td>
+        </tr>
+      `)
+      .join('');
+  }
+
+  function renderProjects(items) {
+    const container = document.getElementById('project-list');
+    if (!container) return;
+
+    if (!items || items.length === 0) {
+      container.innerHTML = '<div class="project-item">No projects available.</div>';
+      return;
+    }
+
+    container.innerHTML = items
+      .map((project) => {
+        const pct = Number(project.usage_percent) || 0;
+        const statusClass =
+          project.display_status === 'Near Limit'
+            ? 'chip-red'
+            : project.display_status === 'At Risk'
+            ? 'chip-amber'
+            : project.display_status === 'Active'
+            ? 'chip-green'
+            : 'chip-gray';
+        const fillClass = pct >= 90 ? '' : pct >= 75 ? 'amber' : project.db_status === 'Completed' ? 'blue' : '';
+        return `
+          <div class="project-item">
+            <div class="proj-top">
+              <span class="proj-name">${safeText(project.project_name)}</span>
+              <span class="proj-pct" style="color:${pct >= 90 ? 'var(--red)' : pct >= 75 ? 'var(--amber)' : 'var(--green-mid)'}">${formatNumber(pct)}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+            <div class="proj-meta">
+              <span>${formatCurrency(project.budget_used)} used</span><span>of ${formatCurrency(project.budget)}</span>
+              <span class="chip ${statusClass}" style="margin-left:auto">${safeText(project.display_status)}</span>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  function renderActivity(items) {
+    const list = document.getElementById('activity-list');
+    if (!list) return;
+
+    if (!items || items.length === 0) {
+      list.innerHTML = '<div class="activity-item"><div class="act-text" style="width:100%;text-align:center;color:var(--text-muted);">No activity available.</div></div>';
+      return;
+    }
+
+    list.innerHTML = items
+      .map((item) => {
+        const colorClass = item.dot_color === 'green' ? 'act-green' : item.dot_color === 'amber' ? 'act-amber' : item.dot_color === 'blue' ? 'act-blue' : item.dot_color === 'red' ? 'act-red' : 'act-gray';
+        return `
+          <div class="activity-item">
+            <div class="act-dot ${colorClass}"></div>
+            <div>
+              <div class="act-text">${safeText(item.description)}</div>
+              <div class="act-time">${safeText(item.time_ago)}</div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  function renderCoverage(data) {
+    const summary = document.getElementById('coverage-summary');
+    if (!summary) return;
+
+    if (!data || !Array.isArray(data.regions) || data.regions.length === 0) {
+      summary.innerHTML = '<div style="color:var(--text-muted);">Coverage data not available.</div>';
+      return;
+    }
+
+    summary.innerHTML = data.regions
+      .map(
+        (region) => `<div style="font-size:12px;display:flex;justify-content:space-between;margin-bottom:8px;"><span>${safeText(region.region)} · ${safeText(region.district)}</span><strong>${safeText(region.village_count)} villages</strong></div>`
+      )
+      .join('');
+  }
+
+  async function loadDashboard() {
+    updateUserDisplay();
+    setLoading('#distribution-tbody', '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px 0;">Loading recent distributions...</td></tr>');
+    setLoading('#project-list', '<div class="project-item">Loading projects...</div>');
+    setLoading('#activity-list', '<div class="activity-item"><div class="act-text" style="width:100%;text-align:center;color:var(--text-muted);">Loading activity...</div></div>');
+    setLoading('#coverage-summary', '<div style="color:var(--text-muted);">Loading coverage details...</div>');
+
+    try {
+      const [stats, distributions, budget, activity, coverage] = await Promise.all([
+        apiGet('stats'),
+        apiGet('recent-distributions'),
+        apiGet('budget-summary'),
+        apiGet('activity'),
+        apiGet('coverage'),
+      ]);
+
+      if (stats) renderStats(stats.data);
+      if (distributions) renderDistributions(distributions.data || []);
+      if (budget) renderProjects(budget.data || []);
+      if (activity) renderActivity(activity.data || []);
+      if (coverage) renderCoverage(coverage.data || { regions: [] });
+    } catch (error) {
+      console.error('Dashboard load error:', error);
+      const content = document.querySelector('.content');
+      if (content && !content.querySelector('.dashboard-error')) {
+        const warning = document.createElement('div');
+        warning.className = 'dashboard-error';
+        warning.style.padding = '16px 20px';
+        warning.style.marginBottom = '18px';
+        warning.style.border = '1px solid rgba(192,57,43,0.2)';
+        warning.style.background = '#fdecea';
+        warning.style.color = '#b92d2f';
+        warning.style.borderRadius = '14px';
+        warning.textContent = 'Unable to load dashboard data. Please log in again or check your connection.';
+        content.prepend(warning);
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
 
 </body>
 </html>

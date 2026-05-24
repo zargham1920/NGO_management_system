@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Donor Reports – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-pale: #d8f3dc;
+    --bg: #f6f4ef;
+    --white: #fdfaf5;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; }
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; padding: 28px 16px; color: #fff; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .nav-item { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 13.5px; padding: 10px 12px; border-radius: 10px; transition: background 0.15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,0.12); color: #fff; }
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .content { padding: 32px; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 18px; padding: 28px; }
+  .button-bar { display: flex; gap: 12px; margin-bottom: 24px; }
+  .btn { border: none; border-radius: 10px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--green-deep); color: #fff; }
+  .btn-secondary { background: #fff; color: var(--text-dark); border: 1px solid var(--border); }
+  .placeholder { color: var(--text-muted); line-height: 1.75; margin-top: 18px; }
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand-name-sm">Umeed-e-Sahar Foundation</div>
+    <div class="brand-tag">Donor Reports</div>
+    <nav class="sidebar-nav">
+      <a href="dashbaord module.html" class="nav-item">Dashboard</a>
+      <a href="rdms-beneficiaries.html" class="nav-item">Beneficiaries</a>
+      <a href="donor module.html" class="nav-item">Donors</a>
+      <a href="inventory.html" class="nav-item">Inventory</a>
+      <a href="#" class="nav-item active">Donor Reports</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Donor Reports</h1>
+        <p>Generate contribution summaries and donor engagement analytics.</p>
+      </div>
+      <div class="button-bar">
+        <button class="btn btn-secondary" onclick="location.href='dashbaord module.html'">← Back to Dashboard</button>
+        <button class="btn btn-primary">Create Report</button>
+      </div>
+    </header>
+    <div class="content">
+      <div class="card">
+        <h2>Donor reports placeholder</h2>
+        <p class="placeholder">This page is a dedicated placeholder for donor reporting. Use it to build exportable reports, filters, and performance dashboards for your funding sources.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
