@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RDMS – Umeed-e-Sahar Foundation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --sand: #f4e9d6;
+    --sand-dark: #e8d5b7;
+    --amber: #e09f3e;
+    --white: #fdfaf5;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #d4c5a9;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green-deep);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(82,183,136,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(224,159,62,0.12) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Decorative circle elements */
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(82,183,136,0.15);
+    pointer-events: none;
+  }
+  .bg-circle.c1 { width: 500px; height: 500px; top: -200px; right: -150px; }
+  .bg-circle.c2 { width: 300px; height: 300px; bottom: -100px; left: -80px; border-color: rgba(224,159,62,0.12); }
+  .bg-circle.c3 { width: 200px; height: 200px; top: 50%; left: 5%; border-color: rgba(82,183,136,0.08); }
+
+  .login-wrapper {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 580px;
+    width: 900px;
+    max-width: 96vw;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* Left panel */
+  .left-panel {
+    background: linear-gradient(160deg, var(--green-mid) 0%, var(--green-deep) 100%);
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .left-panel::before {
+    content: '';
+    position: absolute;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(82,183,136,0.25) 0%, transparent 70%);
+    bottom: -100px; right: -100px;
+    border-radius: 50%;
+  }
+
+  .brand {
+    position: relative;
+    z-index: 2;
+  }
+
+  .brand-logo {
+    width: 52px; height: 52px;
+    background: var(--amber);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(224,159,62,0.4);
+  }
+
+  .brand-logo svg { width: 28px; height: 28px; }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .left-content {
+    position: relative; z-index: 2;
+  }
+
+  .left-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .left-content h2 span { color: var(--amber); }
+
+  .left-content p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    max-width: 280px;
+  }
+
+  /* Simple slider on the left panel */
+  .slider {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 360px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+
+  .slide { display: none; color: rgba(255,255,255,0.9); }
+  .slide.active { display: block; }
+  .slide h4 { margin-bottom: 6px; font-size: 16px; color: var(--white); }
+  .slide p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+
+  .stats-row {
+    position: relative; z-index: 2;
+    display: flex; gap: 24px;
+  }
+
+  .stat {
+    text-align: left;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--green-light);
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Right panel */
+  .right-panel {
+    background: var(--white);
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .right-panel h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .right-panel .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.1);
+  }
+
+  .form-group input::placeholder { color: #aaa; }
+
+  .forgot {
+    text-align: right;
+    margin-top: -12px;
+    margin-bottom: 28px;
+  }
+
+  .forgot a {
+    font-size: 12px;
+    color: var(--green-mid);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: var(--green-deep);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-login::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .btn-login:hover {
+    background: var(--green-mid);
+    box-shadow: 0 8px 24px rgba(45,106,79,0.35);
+  }
+
+  .btn-login:hover::after { transform: translateX(100%); }
+  .btn-login:active { transform: scale(0.99); }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0;
+    color: var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .divider::before, .divider::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  .role-pills {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .role-pill {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .role-pill:hover, .role-pill.active {
+    border-color: var(--green-mid);
+    color: var(--green-mid);
+    background: rgba(45,106,79,0.06);
+  }
+
+  .role-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 700px) {
+    .login-wrapper { grid-template-columns: 1fr; width: 100%; border-radius: 0; min-height: 100vh; }
+    .left-panel { display: none; }
+    .right-panel { padding: 40px 28px; }
+  }
+
+  /* Fade-in animation */
+  .login-wrapper {
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-circle c1"></div>
+<div class="bg-circle c2"></div>
+<div class="bg-circle c3"></div>
+
+<div class="login-wrapper">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div class="brand-name">Umeed-e-Sahar<br>Foundation</div>
+      <div class="brand-sub">RDMS · Field Operations</div>
+    </div>
+
+    <div class="left-content">
+      <h2>Bringing <span>data</span> to the heart of rural Pakistan.</h2>
+      <p>The Rural Development Management System connects your team, tracks every rupee, and ensures aid reaches those who truly need it.</p>
+
+      <div class="slider" id="left-slider" aria-hidden="false">
+        <div class="slide active">
+          <h4>Field data, simplified</h4>
+          <p>Collect surveys offline and sync securely to central servers.</p>
+        </div>
+        <div class="slide">
+          <h4>Transparent funds</h4>
+          <p>Track donations, allocations, and project budgets in real time.</p>
+        </div>
+        <div class="slide">
+          <h4>Last-mile impact</h4>
+          <p>Ensure aid reaches targeted households with verifiable delivery logs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-number">20K+</span>
+        <span class="stat-label">Beneficiaries</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Volunteers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">3</span>
+        <span class="stat-label">Regions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div id="login-view">
+      <h3>Welcome back</h3>
+      <p class="subtitle">Sign in to access your RDMS dashboard</p>
+
+      <div class="role-label">Sign in as</div>
+      <div class="role-pills" id="login-role-pills" style="margin-bottom: 24px;">
+        <button class="role-pill active" onclick="setRole(this)">NGO Admin</button>
+        <button class="role-pill" onclick="setRole(this)">Field Worker</button>
+        <button class="role-pill" onclick="setRole(this)">Finance Officer</button>
+        <button class="role-pill" onclick="setRole(this)">Auditor</button>
+      </div>
+
+      <div id="auth-message" class="auth-message"></div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input id="login-email" type="email" placeholder="e.g. admin@usfoundation.org" />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="login-password" type="password" placeholder="Enter your password" />
+      </div>
+
+      <div class="forgot"><a href="#" onclick="forgotPassword(event)">Forgot password?</a></div>
+
+      <button class="btn-login" onclick="loginUser()">Sign In to RDMS</button>
+
+      <p class="small-text">Don’t have an account? <a href="#" onclick="showRegister(event)">Create one</a></p>
+
+      <div class="divider">or continue to</div>
+
+      <div class="role-pills">
+        <button class="role-pill" onclick="goToDashboard()">📊 Dashboard Demo</button>
+        <button class="role-pill">🔒 Request Access</button>
+      </div>
+    </div>
+
+    <div id="register-view" style="display:none;">
+      <h3>Create your account</h3>
+      <p class="subtitle">Sign up for RDMS access and request approval from your admin.</p>
+
+      <div class="role-label">Register as</div>
+      <div class="role-pills" id="register-role-pills" style="margin-bottom: 24px;">
+        <button class="role-pill active" onclick="setRole(this)">Field Worker</button>
+        <button class="role-pill" onclick="setRole(this)">Finance Officer</button>
+        <button class="role-pill" onclick="setRole(this)">Auditor</button>
+      </div>
+
+      <div id="auth-message-register" class="auth-message"></div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input id="register-name" type="text" placeholder="e.g. Ali Hassan" />
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input id="register-email" type="email" placeholder="e.g. ali@test.com" />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="register-password" type="password" placeholder="Create a password" />
+      </div>
+
+      <button class="btn-login" onclick="registerUser()">Create Account</button>
+
+      <p class="small-text">Already have an account? <a href="#" onclick="showLogin(event)">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api/auth';
+
+  function setRole(el) {
+    const panel = el.closest('.right-panel');
+    panel.querySelectorAll('.role-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function getSelectedRole(containerId) {
+    const active = document.querySelector(`#${containerId} .role-pill.active`);
+    return active ? active.textContent.trim() : '';
+  }
+
+  function showRegister(event) {
+    if (event) event.preventDefault();
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('register-view').style.display = 'block';
+    clearMessages();
+  }
+
+  function showLogin(event) {
+    if (event) event.preventDefault();
+    document.getElementById('register-view').style.display = 'none';
+    document.getElementById('login-view').style.display = 'block';
+    clearMessages();
+  }
+
+  function clearMessages() {
+    document.getElementById('auth-message').textContent = '';
+    document.getElementById('auth-message-register').textContent = '';
+  }
+
+  function showMessage(id, message, success = true) {
+    const element = document.getElementById(id);
+    element.textContent = message;
+    element.style.color = success ? '#0e9f6e' : '#d63638';
+  }
+
+  async function loginUser() {
+    clearMessages();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const role = getSelectedRole('login-role-pills');
+
+    if (!email || !password || !role) {
+      return showMessage('auth-message', 'Email, password, and role are required.', false);
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return showMessage('auth-message', data.message || 'Login failed.', false);
+      }
+
+      localStorage.setItem('rdmsToken', data.data.token);
+      localStorage.setItem('rdmsUser', JSON.stringify(data.data.user));
+      window.location.href = 'dashbaord module.html';
+    } catch (error) {
+      showMessage('auth-message', 'Unable to connect to the server.', false);
+    }
+  }
+
+  async function registerUser() {
+    clearMessages();
+    const name = document.getElementById('register-name').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+    const role = getSelectedRole('register-role-pills');
+
+    if (!name || !email || !password || !role) {
+      return showMessage('auth-message-register', 'Name, email, password, and role are required.', false);
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return showMessage('auth-message-register', data.message || 'Registration failed.', false);
+      }
+
+      showMessage('auth-message-register', data.message, true);
+    } catch (error) {
+      showMessage('auth-message-register', 'Unable to connect to the server.', false);
+    }
+  }
+
+  async function forgotPassword(event) {
+    event.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+      return showMessage('auth-message', 'Enter your email address to reset your password.', false);
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      showMessage('auth-message', data.message || 'Reset link sent if the email exists.', response.ok);
+    } catch (error) {
+      showMessage('auth-message', 'Unable to connect to the server.', false);
+    }
+  }
+
+  function goToDashboard() {
+    window.location.href = 'dashbaord module.html';
+  }
+
+  // Slider logic for left panel
+  let _slideIndex = 0;
+  function showSlide(idx) {
+    const slides = document.querySelectorAll('#left-slider .slide');
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  }
+
+  function nextSlide() {
+    const slides = document.querySelectorAll('#left-slider .slide');
+    _slideIndex = (_slideIndex + 1) % slides.length;
+    showSlide(_slideIndex);
+  }
+
+  function initSlider() {
+    const slides = document.querySelectorAll('#left-slider .slide');
+    if (!slides || slides.length <= 1) return;
+    _slideIndex = 0;
+    showSlide(_slideIndex);
+    setInterval(nextSlide, 4000);
+  }
+
+  // Initialize slider when DOM is ready
+  document.addEventListener('DOMContentLoaded', initSlider);
+</script>
+</body>
+</html>
