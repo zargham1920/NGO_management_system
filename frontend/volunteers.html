@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Volunteers – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --sand-dark: #e8d5b7;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR STUB TO MATCH GRAPHICS */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; transition: all 0.18s; }
+  .nav-item svg { flex-shrink: 0; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .nav-item .badge { margin-left: auto; background: var(--amber); color: var(--green-deep); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; line-height: 1.4; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  
+  .content { padding: 28px 32px; flex: 1; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* KPI CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 180px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CONTROL BAR */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .search-input-wrap { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; flex: 1; }
+  .search-input-wrap input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; width: 100%; }
+  select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--white); outline: none; cursor: pointer; }
+
+  /* TABLES */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+  .chip-gray { background: #f0ede8; color: #666; }
+
+  .vol-cell { display: flex; align-items: center; gap: 10px; }
+  .vol-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--green-mid) 0%, var(--green-deep) 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .vol-name { font-weight: 600; font-size: 13.5px; }
+  .vol-email { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .skill-tag { display: inline-flex; align-items: center; padding: 2px 8px; background: var(--green-pale); color: var(--green-mid); border-radius: 99px; font-size: 11px; font-weight: 600; margin: 1px 2px; }
+
+  /* FORMS & PROFILES */
+  .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .form-section-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg); }
+  .form-body { padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dark); }
+  .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-mid); outline: none; }
+  .form-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 24px; background: var(--bg); border-top: 1px solid var(--border); }
+  .action-btns { display: flex; gap: 6px; }
+
+  /* MODALS */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,60,46,0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+  .overlay.active { display: flex; }
+  .modal { background: var(--white); border-radius: 20px; padding: 32px; width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid var(--border); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 12px; color: var(--text-dark); }
+  .modal p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 12px; }
+  .btn-cancel { padding: 10px 18px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .btn-danger { padding: 10px 18px; border-radius: 8px; border: none; background: var(--red); color: white; cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+
+  /* TOAST SYSTEM */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+      <span class="badge" id="sidebar-beneficiaries-badge">20K</span>
+    </a>
+    <a class="nav-item" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item active" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
+      <div class="user-info">
+        <div class="user-name">Ayesha Malik</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Volunteer Management</h1>
+      <p id="page-subtitle">Manage volunteer roster, skills, and project assignments</p>
+    </div>
+    <div class="topbar-right" id="topbar-actions">
+      <button class="btn-primary" onclick="showView('add-volunteer')">＋ Add Volunteer</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- VIEW 1: LIST -->
+    <div id="view-list" class="view active">
+      <div class="summary-chips">
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--green-light)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-total">—</div>
+            <div class="s-chip-label">Total Volunteers</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--green-mid)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-available">—</div>
+            <div class="s-chip-label">Available</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--amber)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-busy">—</div>
+            <div class="s-chip-label">Busy</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--blue)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-assigned">—</div>
+            <div class="s-chip-label">Projects Assigned</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" placeholder="Search by name, email, or phone..." />
+        </div>
+        <select id="filter-availability">
+          <option value="">All Statuses</option>
+          <option value="Available">Available</option>
+          <option value="Busy">Busy</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Volunteer</th>
+              <th>Contact Phone</th>
+              <th>Status</th>
+              <th>Skills / Strengths</th>
+              <th>Project Assignments</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="volunteers-tbody">
+            <!-- loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+        <!-- Pagination controls dynamically generated -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: ADD/EDIT FORM -->
+    <div id="view-add-volunteer" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Registry</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3 id="form-title-h">Register Volunteer Profile</h3>
+            <p>Establish volunteer records inside RDMS parameters</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="vol-name" placeholder="e.g. Ali Hassan" />
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="vol-email" placeholder="e.g. ali@gmail.com" />
+            </div>
+            <div class="form-group">
+              <label>Phone Connection *</label>
+              <input type="text" id="vol-phone" placeholder="e.g. 0300-1234567" />
+            </div>
+            <div class="form-group">
+              <label>Availability Status *</label>
+              <select id="vol-availability">
+                <option value="Available">Available</option>
+                <option value="Busy">Busy</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Skills / Strengths (Comma separated)</label>
+              <input type="text" id="vol-skills" placeholder="e.g. Logistics, First Aid, Translation" />
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Home Address</label>
+              <textarea id="vol-address" placeholder="Enter full address..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Cancel Entry</button>
+          <button class="btn-primary" id="btn-save-vol" onclick="saveVolunteer()">Initialize Profile</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete Volunteer Record?</h3>
+    <p>This will permanently remove the volunteer record from the system registry. This action cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="executeDelete()">Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN PROJECT MODAL -->
+<div class="overlay" id="assign-modal">
+  <div class="modal" style="width: 500px;">
+    <h3>Assign Volunteer to Project</h3>
+    <p>Link this volunteer to an active development project.</p>
+    
+    <div class="form-group" style="margin-bottom: 16px;">
+      <label>Active Project *</label>
+      <select id="assign-project-id">
+        <!-- loaded dynamically -->
+      </select>
+    </div>
+    
+    <div class="form-group" style="margin-bottom: 16px;">
+      <label>Assigned Role / Function *</label>
+      <input type="text" id="assign-role" placeholder="e.g. Field Surveyor" />
+    </div>
+
+    <div class="form-group" style="margin-bottom: 24px;">
+      <label>Weekly Hours Commitment</label>
+      <input type="number" id="assign-hours" placeholder="e.g. 10" min="1" />
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideAssignModal()">Cancel</button>
+      <button class="btn-primary" onclick="executeAssign()">Assign Volunteer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="system-toast">
+  <span>✓</span> <span id="toast-text">Success message text.</span>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  let volunteers = [];
+  let projects = [];
+  let editingVolId = null;
+  let deleteIndex = null;
+  let assignIndex = null;
+  
+  let state = {
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+    search: '',
+    availability: ''
+  };
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const actions = document.getElementById('topbar-actions');
+    const title = document.getElementById('page-title');
+    if(viewId === 'list') {
+      document.getElementById('view-list').classList.add('active');
+      title.textContent = "Volunteer Management";
+      actions.style.display = 'flex';
+      loadVolunteers();
+    } else {
+      document.getElementById('view-' + viewId).classList.add('active');
+      actions.style.display = 'none';
+      document.getElementById('form-title-h').textContent = editingVolId ? "Edit Volunteer Profile" : "Register Volunteer Profile";
+      document.getElementById('btn-save-vol').textContent = editingVolId ? "Save Changes" : "Initialize Profile";
+    }
+  }
+
+  async function loadVolunteers() {
+    const token = getToken();
+    try {
+      const qs = new URLSearchParams({
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        availability: state.availability
+      }).toString();
+      
+      const res = await fetch(`${API_BASE}/volunteers?${qs}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const responseData = await res.json();
+      volunteers = responseData.data || [];
+      state.totalPages = responseData.total_pages || 1;
+
+      // Render Table
+      const tbody = document.getElementById('volunteers-tbody');
+      tbody.innerHTML = volunteers.map((v, idx) => {
+        const initials = (v.name || 'V').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const skillsList = (v.skills || '').split(',').filter(s => s.trim()).map(s => `<span class="skill-tag">${s.trim()}</span>`).join('');
+        const projCount = v.project_count || 0;
+
+        return `
+          <tr>
+            <td>
+              <div class="vol-cell">
+                <div class="vol-avatar">${initials}</div>
+                <div>
+                  <div class="vol-name">${v.name}</div>
+                  <div class="vol-email">${v.email}</div>
+                </div>
+              </div>
+            </td>
+            <td>${v.phone || '—'}</td>
+            <td>${renderAvailabilityBadge(v.availability)}</td>
+            <td><div style="max-width:260px; overflow:hidden;">${skillsList || '<span style="color:var(--text-muted)">No skills logged</span>'}</div></td>
+            <td>
+              <div style="font-weight:600;">${projCount} Projects</div>
+            </td>
+            <td>
+              <div class="action-btns" onclick="event.stopPropagation()">
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="editVolunteer(${idx})">Edit</button>
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;color:var(--green-mid);border-color:var(--green-mid);" onclick="openAssignModal(${idx})">Assign Project</button>
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;color:var(--red);border-color:var(--red);" onclick="confirmDelete(${idx})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;">No volunteers matching filters.</td></tr>';
+      
+      // Update Summary KPIs
+      const nums = document.querySelectorAll('.s-chip-num');
+      if (nums.length >= 4) {
+        nums[0].textContent = responseData.total || 0;
+        nums[1].textContent = volunteers.filter(v => v.availability === 'Available').length;
+        nums[2].textContent = volunteers.filter(v => v.availability === 'Busy').length;
+        nums[3].textContent = volunteers.reduce((sum, v) => sum + (v.project_count || 0), 0);
+      }
+
+      renderPagination(responseData.total || 0);
+    } catch (err) { triggerToast(`Error: ${err.message}`, true); }
+  }
+
+  function renderAvailabilityBadge(status) {
+    const s = (status || 'Available').toLowerCase();
+    if (s === 'available') return '<span class="chip chip-green">Available</span>';
+    if (s === 'busy') return '<span class="chip chip-amber">Busy</span>';
+    return '<span class="chip chip-gray">Inactive</span>';
+  }
+
+  function renderPagination(total) {
+    const container = document.querySelector('.pagination');
+    if (!container) return;
+    const start = total === 0 ? 0 : ((state.page - 1) * state.limit) + 1;
+    const end = Math.min(state.page * state.limit, total);
+
+    let btns = `<button class="page-btn" ${state.page <= 1 ? 'disabled' : ''} onclick="changePage(${state.page - 1})">‹</button>`;
+    for (let i = 1; i <= state.totalPages; i++) {
+      btns += `<button class="page-btn ${state.page === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    btns += `<button class="page-btn" ${state.page >= state.totalPages ? 'disabled' : ''} onclick="changePage(${state.page + 1})">›</button>`;
+
+    container.innerHTML = `
+      <span>Showing ${start}–${end} of ${total} volunteers</span>
+      <div class="page-btns">${btns}</div>
+    `;
+  }
+
+  function changePage(p) {
+    state.page = p;
+    loadVolunteers();
+  }
+
+  async function loadProjects() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/projects`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      projects = data.data || [];
+      const projSelect = document.getElementById('assign-project-id');
+      projSelect.innerHTML = projects.map(p => `<option value="${p.project_id || p._id}">${p.project_name}</option>`).join('');
+    } catch (e) { console.warn(e); }
+  }
+
+  async function saveVolunteer() {
+    const token = getToken();
+    const name = document.getElementById('vol-name').value.trim();
+    const email = document.getElementById('vol-email').value.trim();
+    const phone = document.getElementById('vol-phone').value.trim();
+    const availability = document.getElementById('vol-availability').value;
+    const skills = document.getElementById('vol-skills').value.trim();
+    const address = document.getElementById('vol-address').value.trim();
+
+    if (!name || !email || !phone) {
+      triggerToast('Name, email, and phone connection are required.', true);
+      return;
+    }
+
+    const payload = { name, email, phone, availability, skills, address };
+
+    try {
+      let url = `${API_BASE}/volunteers`;
+      let method = 'POST';
+      if (editingVolId) {
+        url = `${API_BASE}/volunteers/${editingVolId}`;
+        method = 'PUT';
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        triggerToast(editingVolId ? 'Volunteer profile updated successfully!' : 'Volunteer registered successfully!', false);
+        editingVolId = null;
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error saving volunteer.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  function editVolunteer(idx) {
+    const v = volunteers[idx];
+    if (!v) return;
+    editingVolId = v.volunteer_id || v._id;
+    document.getElementById('vol-name').value = v.name || '';
+    document.getElementById('vol-email').value = v.email || '';
+    document.getElementById('vol-phone').value = v.phone || '';
+    document.getElementById('vol-availability').value = v.availability || 'Available';
+    document.getElementById('vol-skills').value = v.skills || '';
+    document.getElementById('vol-address').value = v.address || '';
+    showView('add-volunteer');
+  }
+
+  function confirmDelete(idx) {
+    deleteIndex = idx;
+    document.getElementById('delete-modal').classList.add('active');
+  }
+
+  function hideDeleteModal() {
+    document.getElementById('delete-modal').classList.remove('active');
+  }
+
+  async function executeDelete() {
+    hideDeleteModal();
+    const v = volunteers[deleteIndex];
+    if (!v) return;
+    const token = getToken();
+    const id = v.volunteer_id || v._id;
+    try {
+      const res = await fetch(`${API_BASE}/volunteers/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        triggerToast('Volunteer record removed.', false);
+        loadVolunteers();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error deleting volunteer.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  function openAssignModal(idx) {
+    assignIndex = idx;
+    document.getElementById('assign-role').value = '';
+    document.getElementById('assign-hours').value = '';
+    document.getElementById('assign-modal').classList.add('active');
+  }
+
+  function hideAssignModal() {
+    document.getElementById('assign-modal').classList.remove('active');
+  }
+
+  async function executeAssign() {
+    const v = volunteers[assignIndex];
+    if (!v) return;
+    const token = getToken();
+    const id = v.volunteer_id || v._id;
+    
+    const project_id = document.getElementById('assign-project-id').value;
+    const role = document.getElementById('assign-role').value.trim();
+    const hours_per_week = document.getElementById('assign-hours').value;
+
+    if (!project_id || !role) {
+      triggerToast('Project and role designation are required.', true);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/volunteers/${id}/assign`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          project_id: parseInt(project_id),
+          role,
+          hours_per_week: hours_per_week ? parseInt(hours_per_week) : null
+        })
+      });
+      if (res.ok) {
+        triggerToast('Volunteer assigned to project successfully.', false);
+        hideAssignModal();
+        loadVolunteers();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error assigning volunteer.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  function triggerToast(msg, err = false) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = msg;
+    toast.style.background = err ? '#c0392b' : 'var(--green-deep)';
+    toast.className = 'toast show';
+    setTimeout(() => toast.className = 'toast', 3500);
+  }
+
+  function filterVolunteers() {
+    state.search = document.getElementById('search-input').value.trim();
+    state.availability = document.getElementById('filter-availability').value;
+    state.page = 1;
+    loadVolunteers();
+  }
+
+  let searchDebounce = null;
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(filterVolunteers, 400);
+  });
+  document.getElementById('filter-availability').addEventListener('change', filterVolunteers);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadProjects();
+    loadVolunteers();
+  });
+</script>
+</body>
+</html>

@@ -670,41 +670,44 @@
       Beneficiaries
       <span class="badge">20K</span>
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="donor module.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       Donors & Funding
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="projects.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Projects
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="inventory.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
       Inventory
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="volunteers.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       Volunteers
     </a>
-    <a class="nav-item" href="#">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      Locations
-    </a>
 
     <div class="nav-section-label">Reports</div>
-    <a class="nav-item" href="#">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><bar-chart-2/><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
       Aid Distribution
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="reports.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Donor Reports
+      Reports & Export
     </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="avatar">AM</div>
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
       <div class="user-info">
         <div class="user-name">Ayesha Malik</div>
         <div class="user-role">NGO Admin</div>
@@ -720,16 +723,15 @@
   <header class="topbar">
     <div class="topbar-left">
       <h1>Dashboard</h1>
-      <p>Sunday, 24 May 2026 — Welcome back, Ayesha</p>
+      <p id="topbar-welcome">Sunday, 24 May 2026 — Welcome back, Ayesha</p>
     </div>
     <div class="topbar-right">
       <div class="search-bar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search beneficiary, donor…"/>
       </div>
-      <div class="icon-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-dot"></span>
+      <div class="icon-btn" onclick="logoutUser()" title="Logout" style="cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </div>
       <div class="icon-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
@@ -739,6 +741,8 @@
 
   <!-- CONTENT -->
   <div class="content">
+    <div id="dashboard-message" style="margin-bottom:18px; display:none; padding:14px 18px; border-radius:12px; background: #fff4f0; color:#9f3a38; border:1px solid #f5c6cb;"></div>
+    <div id="dashboard-loading" style="margin-bottom:18px; padding:14px 18px; border-radius:12px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">Loading dashboard data…</div>
 
     <!-- STAT CARDS -->
     <div class="stats-grid">
@@ -746,36 +750,36 @@
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         </div>
-        <div class="stat-num">20,847</div>
+        <div id="beneficiaries-count" class="stat-num">—</div>
         <div class="stat-label-card">Total Beneficiaries</div>
-        <span class="stat-trend trend-up">↑ 3.2% this month</span>
+        <span id="beneficiaries-trend" class="stat-trend trend-up">Loading…</span>
       </div>
 
       <div class="stat-card amber">
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <div class="stat-num">₨4.2M</div>
+        <div id="funds-raised-count" class="stat-num">—</div>
         <div class="stat-label-card">Funds Raised (2026)</div>
-        <span class="stat-trend trend-up">↑ 11% vs last year</span>
+        <span id="funds-raised-trend" class="stat-trend trend-up">Loading…</span>
       </div>
 
       <div class="stat-card blue">
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="stat-num">14</div>
+        <div id="active-projects-count" class="stat-num">—</div>
         <div class="stat-label-card">Active Projects</div>
-        <span class="stat-trend trend-up">↑ 2 new this month</span>
+        <span id="active-projects-trend" class="stat-trend trend-up">Loading…</span>
       </div>
 
       <div class="stat-card red">
         <div class="stat-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
         </div>
-        <div class="stat-num">312</div>
+        <div id="low-inventory-count" class="stat-num">—</div>
         <div class="stat-label-card">Inventory Items Low</div>
-        <span class="stat-trend trend-warn">⚠ Needs restock</span>
+        <span id="low-inventory-trend" class="stat-trend trend-warn">Loading…</span>
       </div>
     </div>
 
@@ -802,54 +806,9 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="recent-distributions-body">
               <tr>
-                <td><strong>Ahmed Ali</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #1042</span></td>
-                <td>Mithi, Tharparkar</td>
-                <td>Solar Water Filter (×1)</td>
-                <td>Pani Project</td>
-                <td>22 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Fatima Bibi</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #2108</span></td>
-                <td>Turbat, Kech</td>
-                <td>Medical Kit (×2)</td>
-                <td>Health First</td>
-                <td>21 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Zaid Khan</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #0887</span></td>
-                <td>Chachro, Tharparkar</td>
-                <td>School Kit (×5)</td>
-                <td>Literacy First</td>
-                <td>20 May 2026</td>
-                <td><span class="chip chip-amber">In Transit</span></td>
-              </tr>
-              <tr>
-                <td><strong>Noor Bano</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #3391</span></td>
-                <td>Khairpur, Sindh</td>
-                <td>Wheat Bag (×10)</td>
-                <td>Food Security</td>
-                <td>19 May 2026</td>
-                <td><span class="chip chip-green">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><strong>Hasan Rind</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #4561</span></td>
-                <td>Lasbela, Balochistan</td>
-                <td>Solar Panel (×1)</td>
-                <td>Pani Project</td>
-                <td>18 May 2026</td>
-                <td><span class="chip chip-blue">Scheduled</span></td>
-              </tr>
-              <tr>
-                <td><strong>Mariam Shar</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #2230</span></td>
-                <td>Bhimber, Punjab</td>
-                <td>Medical Kit (×1)</td>
-                <td>Health First</td>
-                <td>17 May 2026</td>
-                <td><span class="chip chip-red">Delayed</span></td>
+                <td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Loading recent distributions…</td>
               </tr>
             </tbody>
           </table>
@@ -866,49 +825,8 @@
           <button class="btn-sm">Details</button>
         </div>
         <div class="project-list">
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">💧 Pani Project</span>
-              <span class="proj-pct">78%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
-            <div class="proj-meta">
-              <span>₨1.56M used</span><span>of ₨2M</span>
-              <span class="chip chip-green" style="margin-left:auto">Active</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">📚 Literacy First</span>
-              <span class="proj-pct" style="color:var(--amber)">45%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill amber" style="width:45%"></div></div>
-            <div class="proj-meta">
-              <span>₨450K used</span><span>of ₨1M</span>
-              <span class="chip chip-green" style="margin-left:auto">Active</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">🏥 Health First</span>
-              <span class="proj-pct" style="color:var(--blue)">62%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill blue" style="width:62%"></div></div>
-            <div class="proj-meta">
-              <span>₨620K used</span><span>of ₨1M</span>
-              <span class="chip chip-amber" style="margin-left:auto">At Risk</span>
-            </div>
-          </div>
-          <div class="project-item">
-            <div class="proj-top">
-              <span class="proj-name">🌾 Food Security</span>
-              <span class="proj-pct">91%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:91%"></div></div>
-            <div class="proj-meta">
-              <span>₨910K used</span><span>of ₨1M</span>
-              <span class="chip chip-red" style="margin-left:auto">Near Limit</span>
-            </div>
+          <div id="project-budgets-list" class="project-list">
+            <div style="padding:16px; color:var(--text-muted);">Loading project budgets…</div>
           </div>
         </div>
       </div>
@@ -929,10 +847,8 @@
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green-mid)" stroke-width="1.5" opacity="0.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span style="font-size:12px; color: var(--green-mid); font-weight:500; opacity:0.7">Sindh · Balochistan · Punjab</span>
         </div>
-        <div style="padding: 0 16px 16px; display:flex; gap:16px; font-size:12px;">
-          <span>🟢 Sindh (12)</span>
-          <span>🟡 Balochistan (6)</span>
-          <span>🔵 Punjab (3)</span>
+        <div id="coverage-meta" style="padding: 0 16px 16px; display:flex; gap:16px; font-size:12px; color: var(--text-muted);">
+          <span>Loading coverage details…</span>
         </div>
       </div>
 
@@ -970,42 +886,8 @@
         <div class="card-header">
           <div><h2>Activity Feed</h2><p>Latest system events</p></div>
         </div>
-        <div class="activity-list">
-          <div class="activity-item">
-            <div class="act-dot act-green"></div>
-            <div>
-              <div class="act-text"><strong>Ahmed Ali</strong> registered as new beneficiary in Mithi village.</div>
-              <div class="act-time">10 min ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-amber"></div>
-            <div>
-              <div class="act-text">Donation of <strong>₨500,000</strong> received from Aga Khan Foundation.</div>
-              <div class="act-time">1 hr ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-blue"></div>
-            <div>
-              <div class="act-text">Volunteer <strong>Tariq Memon</strong> assigned to Pani Project, Lasbela.</div>
-              <div class="act-time">3 hrs ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-red"></div>
-            <div>
-              <div class="act-text"><strong>Solar Panels</strong> stock dropped below minimum threshold.</div>
-              <div class="act-time">5 hrs ago</div>
-            </div>
-          </div>
-          <div class="activity-item">
-            <div class="act-dot act-green"></div>
-            <div>
-              <div class="act-text"><strong>Literacy First</strong> project milestone reached: 200 students enrolled.</div>
-              <div class="act-time">Yesterday</div>
-            </div>
-          </div>
+        <div id="activity-feed-list" class="activity-list">
+          <div style="padding:16px; color:var(--text-muted);">Loading activity feed…</div>
         </div>
       </div>
     </div>
@@ -1013,5 +895,258 @@
   </div><!-- /content -->
 </main>
 
-</body>
+<script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat('en-US').format(value);
+    }
+
+    function formatCurrency(value) {
+      return '₨' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
+    }
+
+    function renderStatusChip(status) {
+      const lower = (status || '').toLowerCase();
+      if (lower.includes('delayed')) return '<span class="chip chip-red">Delayed</span>';
+      if (lower.includes('scheduled')) return '<span class="chip chip-blue">Scheduled</span>';
+      if (lower.includes('in transit') || lower.includes('transit')) return '<span class="chip chip-amber">In Transit</span>';
+      return '<span class="chip chip-green">Delivered</span>';
+    }
+
+    function renderDashboardMessage(message, isError = true) {
+      const container = document.getElementById('dashboard-message');
+      container.textContent = message;
+      container.style.display = message ? 'block' : 'none';
+      container.style.background = isError ? '#fff4f0' : '#ecfdf5';
+      container.style.color = isError ? '#981b1c' : '#166534';
+      container.style.borderColor = isError ? '#f5c6cb' : '#bbf7d0';
+    }
+
+    function setLoading(loading) {
+      document.getElementById('dashboard-loading').style.display = loading ? 'block' : 'none';
+    }
+
+    function loadUserProfile() {
+      const user = localStorage.getItem('rdmsUser');
+      if (!user) return;
+      try {
+        const profile = JSON.parse(user);
+        document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+        document.querySelector('.user-role').textContent = profile.role || 'User';
+        
+        const avatarEl = document.getElementById('sidebar-user-avatar');
+        if (avatarEl && profile.name) {
+          avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        const welcome = document.getElementById('topbar-welcome');
+        if (welcome) {
+          const shortName = profile.name ? profile.name.split(' ')[0] : 'User';
+          welcome.textContent = `Welcome back, ${shortName}`;
+        }
+        if (profile.role === 'NGO Admin') {
+          const adminSec = document.getElementById('admin-nav-section');
+          if (adminSec) adminSec.style.display = 'block';
+        }
+      } catch (error) {
+        console.warn('Unable to parse user profile', error);
+      }
+    }
+
+    async function logoutUser() {
+      const token = localStorage.getItem('rdmsToken');
+      if (!token) {
+        return redirectToLogin();
+      }
+
+      try {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (error) {
+        console.warn('Logout request failed', error);
+      }
+
+      localStorage.removeItem('rdmsToken');
+      localStorage.removeItem('rdmsRefresh');
+      localStorage.removeItem('rdmsUser');
+      redirectToLogin();
+    }
+
+    function redirectToLogin() {
+      window.location.href = 'index.html';
+    }
+
+    function renderRecentDistributions(items) {
+      const body = document.getElementById('recent-distributions-body');
+      if (!items || items.length === 0) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">No recent distributions found.</td></tr>';
+        return;
+      }
+      body.innerHTML = items.map((item) => `
+        <tr>
+          <td><strong>${item.beneficiary_name || 'Unknown'}</strong><br><span style="color:var(--text-muted);font-size:11px;">ID #${item.distribution_id || '—'}</span></td>
+          <td>${item.village || 'Unknown'}</td>
+          <td>${item.item_name || 'Item'}</td>
+          <td>${item.project_name || 'Project'}</td>
+          <td>${item.date || '—'}</td>
+          <td>${renderStatusChip(item.status)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderProjectBudgets(items) {
+      const container = document.getElementById('project-budgets-list');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div style="padding:16px; color:var(--text-muted);">No active projects available.</div>';
+        return;
+      }
+      container.innerHTML = items.map((project) => {
+        const used = Number(project.budget_used || 0);
+        const total = Number(project.budget || 0);
+        const pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
+        const statusClass = pct > 85 ? 'red' : pct > 60 ? 'blue' : pct > 40 ? 'amber' : 'green';
+        return `
+          <div class="project-item">
+            <div class="proj-top">
+              <span class="proj-name">${project.project_name || 'Unnamed Project'}</span>
+              <span class="proj-pct" style="color:var(--text-dark)">${pct}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill ${statusClass}" style="width:${pct}%"></div></div>
+            <div class="proj-meta">
+              <span>${formatCurrency(used)} used</span><span>of ${formatCurrency(total)}</span>
+              <span class="chip ${statusClass === 'red' ? 'chip-red' : statusClass === 'blue' ? 'chip-blue' : statusClass === 'amber' ? 'chip-amber' : 'chip-green'}" style="margin-left:auto">${project.status || 'Active'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderActivityFeed(items) {
+      const container = document.getElementById('activity-feed-list');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div style="padding:16px; color:var(--text-muted);">No activity recorded yet.</div>';
+        return;
+      }
+      container.innerHTML = items.map((item) => {
+        const type = item.type || 'activity';
+        const dotClass = type === 'donation' ? 'act-amber' : type === 'distribution' ? 'act-blue' : 'act-green';
+        const date = item.date || '';
+        return `
+          <div class="activity-item">
+            <div class="act-dot ${dotClass}"></div>
+            <div>
+              <div class="act-text"><strong>${item.title}</strong> ${item.description || ''}</div>
+              <div class="act-time">${date}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCoverage(items) {
+      const container = document.getElementById('coverage-meta');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<span>No coverage data available.</span>';
+        return;
+      }
+      container.innerHTML = items.map((item) => `
+        <span>• ${item.region || 'Unknown'} (${item.locations || 0} locations, ${item.beneficiaries || 0} beneficiaries)</span>
+      `).join('');
+    }
+
+    async function refreshAuthToken() {
+      const refresh = localStorage.getItem('rdmsRefresh');
+      if (!refresh) return null;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: refresh }),
+        });
+        const data = await response.json();
+        if (response.ok && data.data?.token) {
+          localStorage.setItem('rdmsToken', data.data.token);
+          return data.data.token;
+        }
+      } catch (error) {
+        console.warn('Unable to refresh token', error);
+      }
+      return null;
+    }
+
+    async function fetchOverview(token, retry = true) {
+      try {
+        const response = await fetch(`${API_BASE}/dashboard/overview`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401 && retry) {
+          const newToken = await refreshAuthToken();
+          if (newToken) return fetchOverview(newToken, false);
+          localStorage.removeItem('rdmsToken');
+          localStorage.removeItem('rdmsRefresh');
+          window.location.href = 'index.html';
+          return null;
+        }
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Unable to fetch dashboard.');
+        }
+        return data.data;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function initDashboard() {
+      loadUserProfile();
+      const token = localStorage.getItem('rdmsToken');
+      if (!token) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      setLoading(true);
+      renderDashboardMessage('');
+      try {
+        const data = await fetchOverview(token);
+        if (!data) return;
+
+        document.getElementById('beneficiaries-count').textContent = formatNumber(data.summary.totalBeneficiaries || 0);
+        document.getElementById('funds-raised-count').textContent = formatCurrency(data.summary.totalFundsRaised || 0);
+        document.getElementById('active-projects-count').textContent = formatNumber(data.summary.activeProjects || 0);
+        document.getElementById('low-inventory-count').textContent = formatNumber(data.summary.lowInventory || 0);
+
+        document.getElementById('beneficiaries-trend').textContent = 'Updated now';
+        document.getElementById('funds-raised-trend').textContent = 'Current year total';
+        document.getElementById('active-projects-trend').textContent = 'Live project count';
+        document.getElementById('low-inventory-trend').textContent = 'Based on inventory alerts';
+
+        renderRecentDistributions(data.recentDistributions);
+        renderProjectBudgets(data.projectBudgets);
+        renderActivityFeed(data.activityFeed);
+        renderCoverage(data.coverage);
+      } catch (error) {
+        console.error('Dashboard load failed', error);
+        renderDashboardMessage(error.message || 'Unable to load dashboard data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+  </body>
 </html>

@@ -10,6 +10,7 @@ router.post('/login', validators.validateLogin, authController.login);
 router.get('/roles', authController.getRoles);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', validators.validateResetPassword, authController.resetPassword);
+router.post('/refresh', authController.refreshToken);
 router.post('/logout', authMiddleware.verifyToken, authController.logout);
 router.get('/me', authMiddleware.verifyToken, authController.getMe);
 router.patch('/change-password', authMiddleware.verifyToken, validators.validateChangePassword, authController.changePassword);

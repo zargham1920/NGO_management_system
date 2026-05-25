@@ -619,41 +619,55 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </a>
+
     <div class="nav-section-label">Modules</div>
     <a class="nav-item active" href="rdms-beneficiaries.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       Beneficiaries
-      <span class="badge">20K</span>
+      <span class="badge" id="sidebar-beneficiaries-badge">20K</span>
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="donor module.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       Donors & Funding
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="projects.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Projects
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="inventory.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
       Inventory
     </a>
-    <a class="nav-item" href="#">
+    <a class="nav-item" href="volunteers.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       Volunteers
     </a>
+
     <div class="nav-section-label">Reports</div>
-    <a class="nav-item" href="#">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
       Aid Distribution
     </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
   </nav>
   <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="avatar">AM</div>
-      <div>
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
+      <div class="user-info">
         <div class="user-name">Ayesha Malik</div>
         <div class="user-role">NGO Admin</div>
       </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
     </div>
   </div>
 </aside>
@@ -1006,16 +1020,16 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Full Name <span class="required-star">*</span></label>
-              <input type="text" placeholder="e.g. Ahmed Ali Khan"/>
+              <input type="text" id="beneficiary-name" placeholder="e.g. Ahmed Ali Khan"/>
             </div>
             <div class="form-group">
               <label>CNIC Number <span class="required-star">*</span></label>
-              <input type="text" placeholder="XXXXX-XXXXXXX-X" maxlength="15"/>
+              <input type="text" id="beneficiary-cnic" placeholder="XXXXX-XXXXXXX-X" maxlength="15"/>
               <span class="form-hint">Format: 42301-1234567-1 (must be unique)</span>
             </div>
             <div class="form-group">
-              <label>Date of Birth</label>
-              <input type="date"/>
+              <label>Age</label>
+              <input type="number" id="beneficiary-age" placeholder="e.g. 35" min="0" max="120"/>
             </div>
             <div class="form-group">
               <label>Gender <span class="required-star">*</span></label>
@@ -1037,8 +1051,11 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Contact Number</label>
-              <input type="tel" placeholder="e.g. 0333-1234567"/>
+              <label>Status</label>
+              <select id="beneficiary-status">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+              </select>
             </div>
           </div>
         </div>
@@ -1057,7 +1074,7 @@
           <div class="form-grid three">
             <div class="form-group">
               <label>Household Size <span class="required-star">*</span></label>
-              <input type="number" placeholder="e.g. 6" min="1" max="30"/>
+              <input type="number" id="beneficiary-household" placeholder="e.g. 6" min="1" max="30"/>
             </div>
             <div class="form-group">
               <label>No. of Children</label>
@@ -1069,7 +1086,7 @@
             </div>
             <div class="form-group">
               <label>Primary Income Source <span class="required-star">*</span></label>
-              <select>
+              <select id="beneficiary-income">
                 <option value="">Select source</option>
                 <option>Agriculture</option>
                 <option>Livestock</option>
@@ -1124,7 +1141,7 @@
             </div>
             <div class="form-group">
               <label>District <span class="required-star">*</span></label>
-              <select>
+              <select id="beneficiary-district">
                 <option value="">Select district</option>
                 <option>Tharparkar</option>
                 <option>Lasbela</option>
@@ -1139,7 +1156,7 @@
             </div>
             <div class="form-group">
               <label>Village Name <span class="required-star">*</span></label>
-              <input type="text" placeholder="e.g. Darbelo"/>
+              <input type="text" id="beneficiary-village" placeholder="e.g. Darbelo"/>
             </div>
             <div class="form-group">
               <label>GPS Latitude</label>
@@ -1193,8 +1210,8 @@
             </label>
           </div>
           <div class="form-group" style="margin-top:16px">
-            <label>Additional Notes</label>
-            <textarea placeholder="Describe any specific vulnerabilities, medical conditions, or urgent needs…"></textarea>
+            <label>Additional Notes (Needs Details)</label>
+            <textarea id="beneficiary-needs" placeholder="Describe any specific vulnerabilities, medical conditions, or urgent needs…"></textarea>
           </div>
         </div>
         <div class="form-footer">
@@ -1468,31 +1485,315 @@
 </div>
 
 <script>
-  const profiles = [
-    { name: 'Ahmed Khan', initials: 'AK' },
-    { name: 'Fatima Bibi', initials: 'FB' },
-    { name: 'Zaid Khan',   initials: 'ZK' },
-  ];
+  const API_BASE = 'http://localhost:3000/api';
+  let beneficiaries = [];
+  let currentViewIndex = null;
+  let editingId = null;
+  
+  let state = {
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+    search: '',
+    district: '',
+    status: ''
+  };
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  function renderStatusBadge(status) {
+    const s = (status || 'pending').toLowerCase();
+    if (s === 'approved' || s === 'active') return '<span class="chip chip-green">Approved</span>';
+    if (s === 'rejected' || s === 'inactive') return '<span class="chip chip-red">Rejected</span>';
+    return '<span class="chip chip-amber">Pending</span>';
+  }
+
+  async function loadBeneficiaries() {
+    const token = getToken();
+    try {
+      const qs = new URLSearchParams({
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        status: state.status,
+        location: state.district
+      }).toString();
+      
+      const res = await fetch(`${API_BASE}/beneficiaries?${qs}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      beneficiaries = data.data || [];
+      state.totalPages = data.total_pages || 1;
+      
+      // Update counts
+      const nums = document.querySelectorAll('.s-chip-num');
+      if (nums.length >= 4) {
+        nums[0].textContent = data.total || 0;
+        nums[1].textContent = beneficiaries.filter(b => b.status === 'approved').length;
+        nums[2].textContent = beneficiaries.filter(b => new Date(b.created_at).getMonth() === new Date().getMonth()).length;
+        nums[3].textContent = beneficiaries.filter(b => b.needs && b.needs.toLowerCase().includes('critical')).length;
+      }
+      
+      const showLabel = document.querySelector('.filter-count');
+      if (showLabel) {
+        showLabel.innerHTML = `Showing <strong>${beneficiaries.length}</strong> of ${data.total || 0}`;
+      }
+
+      const tbody = document.getElementById('beneficiary-tbody');
+      tbody.innerHTML = beneficiaries.map((b, idx) => {
+        const initials = (b.name || 'B').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        return `
+          <tr onclick="showProfile(${idx})">
+            <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--green-mid)"/></td>
+            <td>
+              <div class="beneficiary-cell">
+                <div class="b-avatar" style="background:#d8f3dc;color:#2d6a4f">${initials}</div>
+                <div>
+                  <div class="b-name">${b.name || 'N/A'}</div>
+                  <div class="b-cnic">${b.cnic || 'N/A'}</div>
+                </div>
+              </div>
+            </td>
+            <td>${b.location || 'N/A'}</td>
+            <td>${b.age || '-'} years</td>
+            <td>${b.income_source || '—'}</td>
+            <td>
+              <div class="needs-tags">
+                <span class="need-tag">${(b.needs || 'None').substring(0, 30)}</span>
+              </div>
+            </td>
+            <td>${renderStatusBadge(b.status)}</td>
+            <td>${b.created_at ? new Date(b.created_at).toLocaleDateString('en-PK') : '—'}</td>
+            <td>
+              <div class="action-btns" onclick="event.stopPropagation()">
+                <div class="icon-action" title="View Profile" onclick="showProfile(${idx})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="icon-action" title="Edit" onclick="editBeneficiary(${idx})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <div class="icon-action danger" title="Delete" onclick="confirmDelete(${idx})">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="9" style="text-align:center;padding:24px;">No beneficiaries found.</td></tr>';
+      
+      renderPagination(data.total);
+    } catch (err) { showToast(`Error loading: ${err.message}`); }
+  }
+
+  function renderPagination(total) {
+    const container = document.querySelector('.pagination');
+    if (!container) return;
+    const start = total === 0 ? 0 : ((state.page - 1) * state.limit) + 1;
+    const end = Math.min(state.page * state.limit, total);
+
+    let btns = `<button class="page-btn" ${state.page <= 1 ? 'disabled' : ''} onclick="changePage(${state.page - 1})">‹</button>`;
+    for (let i = 1; i <= state.totalPages; i++) {
+      if (i === 1 || i === state.totalPages || (i >= state.page - 1 && i <= state.page + 1)) {
+        btns += `<button class="page-btn ${state.page === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+      } else if (i === 2 || i === state.totalPages - 1) {
+        btns += `<span style="padding:0 4px;color:var(--text-muted)">…</span>`;
+      }
+    }
+    btns += `<button class="page-btn" ${state.page >= state.totalPages ? 'disabled' : ''} onclick="changePage(${state.page + 1})">›</button>`;
+
+    container.innerHTML = `
+      <span>Showing ${start}–${end} of ${total} beneficiaries</span>
+      <div class="page-btns">${btns}</div>
+    `;
+  }
+
+  function changePage(p) {
+    state.page = p;
+    loadBeneficiaries();
+  }
 
   function showView(name) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + name).classList.add('active');
+    if (name === 'list') {
+      editingId = null;
+      loadBeneficiaries();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function showProfile(idx) {
-    const p = profiles[idx] || profiles[0];
-    document.getElementById('profile-name-h').textContent = p.name;
-    document.getElementById('profile-fullname').textContent = p.name;
-    document.getElementById('profile-avatar').textContent = p.initials;
+    const b = beneficiaries[idx];
+    if (!b) return;
+    document.getElementById('profile-name-h').textContent = b.name || 'N/A';
+    document.getElementById('profile-fullname').textContent = b.name || 'N/A';
+    document.getElementById('profile-avatar').textContent = (b.name || 'N').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    // Details
+    document.querySelector('.profile-id').textContent = `CNIC: ${b.cnic || 'N/A'}`;
+    const labels = document.querySelectorAll('.profile-detail-row');
+    if (labels.length >= 6) {
+      labels[0].querySelector('span:last-child').textContent = b.gender || 'Not specified';
+      labels[1].querySelector('span:last-child').textContent = `${b.age || '-'} years`;
+      labels[2].querySelector('span:last-child').textContent = b.location || 'N/A';
+      labels[3].querySelector('span:last-child').textContent = b.income_source || 'N/A';
+      labels[4].querySelector('span:last-child').textContent = b.household_size || 'N/A';
+      labels[5].querySelector('span:last-child').textContent = b.status || 'pending';
+    }
+    
     showView('profile');
   }
 
-  function switchTab(btn, tabId) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
+  function editBeneficiary(idx) {
+    const b = beneficiaries[idx];
+    if (!b) return;
+    editingId = b.beneficiary_id || b._id;
+    document.getElementById('beneficiary-name').value = b.name || '';
+    document.getElementById('beneficiary-cnic').value = b.cnic || '';
+    document.getElementById('beneficiary-age').value = b.age || '';
+    document.getElementById('beneficiary-household').value = b.household_size || '';
+    document.getElementById('beneficiary-income').value = b.income_source || '';
+    document.getElementById('beneficiary-district').value = b.location || '';
+    document.getElementById('beneficiary-village').value = b.village || '';
+    document.getElementById('beneficiary-status').value = b.status || 'pending';
+    document.getElementById('beneficiary-needs').value = b.needs || '';
+
+    showView('register');
+  }
+
+  async function saveAndReturn() {
+    const token = getToken();
+    const name = document.getElementById('beneficiary-name').value.trim();
+    const cnic = document.getElementById('beneficiary-cnic').value.trim();
+    const age = document.getElementById('beneficiary-age').value;
+    const household_size = document.getElementById('beneficiary-household').value;
+    const income_source = document.getElementById('beneficiary-income').value;
+    const district = document.getElementById('beneficiary-district').value;
+    const village = document.getElementById('beneficiary-village').value;
+    const status = document.getElementById('beneficiary-status').value;
+    const needs = document.getElementById('beneficiary-needs').value.trim();
+
+    if (!name || !cnic) {
+      showToast('Name and CNIC are required.', false);
+      return;
+    }
+
+    const payload = {
+      name,
+      cnic,
+      age: age ? parseInt(age) : undefined,
+      household_size: household_size ? parseInt(household_size) : undefined,
+      income_source,
+      location: village ? `${village}, ${district}` : district,
+      needs,
+      status
+    };
+
+    try {
+      let url = `${API_BASE}/beneficiaries`;
+      let method = 'POST';
+      
+      if (editingId) {
+        url = `${API_BASE}/beneficiaries/${editingId}`;
+        method = 'PUT';
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        showToast(editingId ? 'Beneficiary updated successfully!' : 'Beneficiary registered successfully!');
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const errData = await res.json();
+        showToast(errData.message || 'Operation failed.', false);
+      }
+    } catch (e) {
+      showToast(`Error: ${e.message}`, false);
+    }
+  }
+
+  function confirmDelete(idx) {
+    const b = beneficiaries[idx];
+    if (!b) return;
+    currentViewIndex = idx;
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('active');
+  }
+
+  function hideDeleteModal() {
+    document.getElementById('delete-modal').classList.remove('active');
+  }
+
+  async function executeDelete() {
+    hideDeleteModal();
+    const b = beneficiaries[currentViewIndex];
+    if (!b) return;
+    const id = b.beneficiary_id || b._id;
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/beneficiaries/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Beneficiary record deleted.');
+        loadBeneficiaries();
+      } else {
+        showToast('Failed to delete beneficiary.', false);
+      }
+    } catch (e) {
+      showToast(`Error: ${e.message}`, false);
+    }
+  }
+
+  // Update modal trigger for confirmation button
+  const confirmDelBtn = document.querySelector('#delete-modal .btn-danger');
+  if (confirmDelBtn) {
+    confirmDelBtn.setAttribute('onclick', 'executeDelete()');
   }
 
   function toggleNeed(el) {
@@ -1501,24 +1802,41 @@
     cb.checked = !cb.checked;
   }
 
-  function showToast(msg) {
+  function showToast(msg, success = true) {
     const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg || 'Beneficiary saved successfully!';
+    document.getElementById('toast-msg').textContent = msg;
+    t.style.background = success ? 'var(--green-deep)' : '#c0392b';
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  function saveAndReturn() {
-    showView('list');
-    showToast('Beneficiary registered successfully!');
+  function filterTable() {
+    state.search = document.querySelector('.search-input-wrap input').value.trim();
+    const selects = document.querySelectorAll('.filter-bar select');
+    if (selects.length >= 3) {
+      state.district = selects[0].value;
+      state.status = selects[2].value;
+    }
+    state.page = 1;
+    loadBeneficiaries();
   }
 
-  function showDeleteModal() { document.getElementById('delete-modal').classList.add('show'); }
-  function hideDeleteModal() { document.getElementById('delete-modal').classList.remove('show'); }
+  // Add event listener to search input for keystrokes
+  let searchDebounce = null;
+  document.querySelector('.search-input-wrap input').addEventListener('input', function() {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(filterTable, 400);
+  });
+  
+  // Attach filter change listeners
+  document.querySelectorAll('.filter-bar select').forEach(sel => {
+    sel.addEventListener('change', filterTable);
+  });
 
-  function filterTable(val) {
-    // Placeholder — connect to your API in backend
-  }
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadBeneficiaries();
+  });
 </script>
 </body>
 </html>

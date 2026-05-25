@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Projects – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --sand-dark: #e8d5b7;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR STUB TO MATCH GRAPHICS */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; transition: all 0.18s; }
+  .nav-item svg { flex-shrink: 0; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .nav-item .badge { margin-left: auto; background: var(--amber); color: var(--green-deep); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; line-height: 1.4; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  
+  .content { padding: 28px 32px; flex: 1; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* KPI CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 180px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CONTROL BAR */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .search-input-wrap { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; flex: 1; }
+  .search-input-wrap input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; width: 100%; }
+  select { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--white); outline: none; cursor: pointer; }
+
+  /* TABLES */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+  .chip-gray { background: #f0ede8; color: #666; }
+
+  /* progress-bar */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; min-width: 100px; }
+  .progress-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; background: var(--green-mid); transition: width .4s ease; }
+  .progress-pct { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+
+  /* FORMS & PROFILES */
+  .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .form-section-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg); }
+  .form-body { padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dark); }
+  .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-mid); outline: none; }
+  .form-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 24px; background: var(--bg); border-top: 1px solid var(--border); }
+  .action-btns { display: flex; gap: 6px; }
+
+  /* MODALS */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,60,46,0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+  .overlay.active { display: flex; }
+  .modal { background: var(--white); border-radius: 20px; padding: 32px; width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid var(--border); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 12px; color: var(--text-dark); }
+  .modal p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 12px; }
+  .btn-cancel { padding: 10px 18px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .btn-danger { padding: 10px 18px; border-radius: 8px; border: none; background: var(--red); color: white; cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+
+  /* TOAST SYSTEM */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+      <span class="badge" id="sidebar-beneficiaries-badge">20K</span>
+    </a>
+    <a class="nav-item" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item active" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
+      <div class="user-info">
+        <div class="user-name">Ayesha Malik</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Project Management</h1>
+      <p id="page-subtitle">Establish development targets, budgets, and geographic operations</p>
+    </div>
+    <div class="topbar-right" id="topbar-actions">
+      <button class="btn-primary" onclick="showView('add-project')">＋ Add Project</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- VIEW 1: LIST -->
+    <div id="view-list" class="view active">
+      <div class="summary-chips">
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--green-light)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-total">—</div>
+            <div class="s-chip-label">Total Projects</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--blue)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-active">—</div>
+            <div class="s-chip-label">Active / Ongoing</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--green-deep)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-completed">—</div>
+            <div class="s-chip-label">Completed</div>
+          </div>
+        </div>
+        <div class="s-chip">
+          <div class="s-chip-dot" style="background:var(--amber)"></div>
+          <div>
+            <div class="s-chip-num" id="summary-budget">—</div>
+            <div class="s-chip-label">Total Budget Allocated</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" placeholder="Search by name, sector, or location..." />
+        </div>
+        <select id="filter-status">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Pending">Pending</option>
+          <option value="On Hold">On Hold</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <select id="filter-sector">
+          <option value="">All Sectors</option>
+          <option value="Water">Water Logistics / Pumps</option>
+          <option value="Nutrition">Nutrition / Food Security</option>
+          <option value="Education">Educational Materials</option>
+          <option value="Medical">Medical Emergency Kits</option>
+          <option value="Infrastructure">Infrastructure Elements</option>
+          <option value="Other">Other Modules</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Sector</th>
+              <th>Village / Location</th>
+              <th>Status</th>
+              <th>Budget Status</th>
+              <th>Utilization Rate</th>
+              <th>Operational Dates</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="projects-tbody">
+            <!-- loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+        <!-- Pagination controls dynamically generated -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: ADD/EDIT FORM -->
+    <div id="view-add-project" class="view">
+      <div style="margin-bottom:20px;">
+        <button class="btn-secondary" onclick="showView('list')">← Return to Registry</button>
+      </div>
+      <div class="form-card">
+        <div class="form-section-header">
+          <div>
+            <h3 id="form-title-h">Create Project Portfolio</h3>
+            <p>Declare developmental operations, set parameters and budget caps</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Project Designation Name *</label>
+              <input type="text" id="project-name" placeholder="e.g. Pani Project - Solar Installation Axis" />
+            </div>
+            <div class="form-group">
+              <label>Sector / Category *</label>
+              <select id="project-sector">
+                <option value="Water">Water Logistics / Pumps</option>
+                <option value="Nutrition">Nutrition / Food Security</option>
+                <option value="Education">Educational Materials</option>
+                <option value="Medical">Medical Emergency Kits</option>
+                <option value="Infrastructure">Infrastructure Elements</option>
+                <option value="Other">Other Modules</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status Vector *</label>
+              <select id="project-status">
+                <option value="Pending">Pending</option>
+                <option value="Active">Active</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Target Village/District Location</label>
+              <select id="project-location">
+                <option value="">Unassigned Location</option>
+                <!-- loaded dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Operational Capital Budget (PKR) *</label>
+              <input type="number" id="project-budget" placeholder="e.g. 500000" />
+            </div>
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" id="project-start-date" />
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="date" id="project-end-date" />
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-secondary" onclick="showView('list')">Cancel Portfolio Entry</button>
+          <button class="btn-primary" id="btn-save-project" onclick="saveProject()">Initialize Project</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete Project Record?</h3>
+    <p>This will permanently remove the project. All volunteer assignments and ledger resources linked to this project will be impacted. This action cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideDeleteModal()">Cancel</button>
+      <button class="btn-danger" id="btn-confirm-delete" onclick="executeDelete()">Delete Portfolio</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="system-toast">
+  <span>✓</span> <span id="toast-text">Success message text.</span>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  let projects = [];
+  let editingProjectId = null;
+  let deleteIndex = null;
+  
+  let state = {
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+    search: '',
+    status: '',
+    sector: ''
+  };
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const actions = document.getElementById('topbar-actions');
+    const title = document.getElementById('page-title');
+    if(viewId === 'list') {
+      document.getElementById('view-list').classList.add('active');
+      title.textContent = "Project Management";
+      actions.style.display = 'flex';
+      loadProjects();
+      loadSummary();
+    } else {
+      document.getElementById('view-' + viewId).classList.add('active');
+      actions.style.display = 'none';
+      document.getElementById('form-title-h').textContent = editingProjectId ? "Edit Project Portfolio" : "Create Project Portfolio";
+      document.getElementById('btn-save-project').textContent = editingProjectId ? "Save Changes" : "Initialize Project";
+    }
+  }
+
+  async function loadSummary() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/projects/summary`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const summary = await res.json();
+      
+      document.getElementById('summary-total').textContent = summary.total || 0;
+      document.getElementById('summary-active').textContent = (summary.active || 0) + (summary.ongoing || 0);
+      document.getElementById('summary-completed').textContent = summary.completed || 0;
+      
+      const totalBudget = Number(summary.total_budget || 0);
+      if (totalBudget >= 1000000) {
+        document.getElementById('summary-budget').textContent = '₨' + (totalBudget / 1000000).toFixed(1) + 'M';
+      } else {
+        document.getElementById('summary-budget').textContent = '₨' + totalBudget.toLocaleString();
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function loadLocations() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/projects/locations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const resData = await res.json();
+      const locations = resData.data || [];
+      const locSelect = document.getElementById('project-location');
+      locSelect.innerHTML = `<option value="">— Select Target Location —</option>` +
+        locations.map(loc => {
+          const label = `${loc.village_name}, ${loc.district} (${loc.region})`;
+          return `<option value="${loc.location_id}">${label}</option>`;
+        }).join('');
+    } catch (e) { console.warn(e); }
+  }
+
+  async function loadProjects() {
+    const token = getToken();
+    try {
+      const qs = new URLSearchParams({
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        status: state.status,
+        sector: state.sector
+      }).toString();
+      
+      const res = await fetch(`${API_BASE}/projects?${qs}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const responseData = await res.json();
+      projects = responseData.data || [];
+      state.totalPages = responseData.total_pages || 1;
+
+      const tbody = document.getElementById('projects-tbody');
+      tbody.innerHTML = projects.map((p, idx) => {
+        const used = Number(p.budget_used || 0);
+        const total = Number(p.budget || 0);
+        const pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
+        const statusClass = pct > 85 ? 'red' : pct > 60 ? 'blue' : pct > 40 ? 'amber' : 'green';
+
+        return `
+          <tr>
+            <td><strong>${p.project_name}</strong><br><span style="font-size:11px;color:var(--text-muted)">ID: #${p.project_id || p._id}</span></td>
+            <td><span class="chip chip-blue">${p.sector || 'General'}</span></td>
+            <td>${p.village_name || 'Unassigned'}</td>
+            <td>${renderStatusBadge(p.status)}</td>
+            <td>
+              <div class="budget-cell">
+                <div style="font-weight:600;">₨${total.toLocaleString()}</div>
+                <div style="font-size:11px;color:var(--text-muted)">Used: ₨${used.toLocaleString()}</div>
+              </div>
+            </td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width:${pct}%; background:${pct > 85 ? 'var(--red)' : pct > 60 ? 'var(--blue)' : 'var(--green-mid)'}"></div>
+                </div>
+                <span class="progress-pct">${pct}%</span>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:12px;">${p.start_date ? new Date(p.start_date).toLocaleDateString('en-PK') : '—'}</div>
+              <div style="font-size:11px;color:var(--text-muted)">to ${p.end_date ? new Date(p.end_date).toLocaleDateString('en-PK') : '—'}</div>
+            </td>
+            <td>
+              <div class="action-btns" onclick="event.stopPropagation()">
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="editProject(${idx})">Edit</button>
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;color:var(--red);border-color:var(--red);" onclick="confirmDelete(${idx})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="8" style="text-align:center;padding:24px;">No projects matching the criteria.</td></tr>';
+      
+      renderPagination(responseData.total || 0);
+    } catch (err) { triggerToast(`Error: ${err.message}`, true); }
+  }
+
+  function renderStatusBadge(status) {
+    const s = (status || 'pending').toLowerCase();
+    if (s === 'completed') return '<span class="chip chip-green">Completed</span>';
+    if (s === 'active' || s === 'ongoing') return '<span class="chip chip-blue">Active</span>';
+    if (s === 'on hold') return '<span class="chip chip-amber">On Hold</span>';
+    return '<span class="chip chip-gray">Pending</span>';
+  }
+
+  function renderPagination(total) {
+    const container = document.querySelector('.pagination');
+    if (!container) return;
+    const start = total === 0 ? 0 : ((state.page - 1) * state.limit) + 1;
+    const end = Math.min(state.page * state.limit, total);
+
+    let btns = `<button class="page-btn" ${state.page <= 1 ? 'disabled' : ''} onclick="changePage(${state.page - 1})">‹</button>`;
+    for (let i = 1; i <= state.totalPages; i++) {
+      btns += `<button class="page-btn ${state.page === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    btns += `<button class="page-btn" ${state.page >= state.totalPages ? 'disabled' : ''} onclick="changePage(${state.page + 1})">›</button>`;
+
+    container.innerHTML = `
+      <span>Showing ${start}–${end} of ${total} projects</span>
+      <div class="page-btns">${btns}</div>
+    `;
+  }
+
+  function changePage(p) {
+    state.page = p;
+    loadProjects();
+  }
+
+  async function saveProject() {
+    const token = getToken();
+    const project_name = document.getElementById('project-name').value.trim();
+    const sector = document.getElementById('project-sector').value;
+    const status = document.getElementById('project-status').value;
+    const location_id = document.getElementById('project-location').value;
+    const budget = document.getElementById('project-budget').value;
+    const start_date = document.getElementById('project-start-date').value || null;
+    const end_date = document.getElementById('project-end-date').value || null;
+
+    if (!project_name || !budget || !location_id || !start_date) {
+      triggerToast('Project name, target location, budget, and start date are required.', true);
+      return;
+    }
+
+    const payload = {
+      project_name,
+      sector,
+      status,
+      location_id: parseInt(location_id),
+      budget: parseFloat(budget),
+      start_date,
+      end_date
+    };
+
+    try {
+      let url = `${API_BASE}/projects`;
+      let method = 'POST';
+      if (editingProjectId) {
+        url = `${API_BASE}/projects/${editingProjectId}`;
+        method = 'PUT';
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        triggerToast(editingProjectId ? 'Project portfolio updated successfully!' : 'Project registered successfully!', false);
+        editingProjectId = null;
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error saving project.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  function editProject(idx) {
+    const p = projects[idx];
+    if (!p) return;
+    editingProjectId = p.project_id || p._id;
+    document.getElementById('project-name').value = p.project_name || '';
+    document.getElementById('project-sector').value = p.sector || 'Water';
+    document.getElementById('project-status').value = p.status || 'Pending';
+    document.getElementById('project-location').value = p.village_name || '';
+    document.getElementById('project-budget').value = p.budget || '';
+    document.getElementById('project-start-date').value = p.start_date ? new Date(p.start_date).toISOString().split('T')[0] : '';
+    document.getElementById('project-end-date').value = p.end_date ? new Date(p.end_date).toISOString().split('T')[0] : '';
+    showView('add-project');
+  }
+
+  function confirmDelete(idx) {
+    deleteIndex = idx;
+    document.getElementById('delete-modal').classList.add('active');
+  }
+
+  function hideDeleteModal() {
+    document.getElementById('delete-modal').classList.remove('active');
+  }
+
+  async function executeDelete() {
+    hideDeleteModal();
+    const p = projects[deleteIndex];
+    if (!p) return;
+    const token = getToken();
+    const id = p.project_id || p._id;
+    try {
+      const res = await fetch(`${API_BASE}/projects/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        triggerToast('Project record removed.', false);
+        loadProjects();
+        loadSummary();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error deleting project.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  function triggerToast(msg, err = false) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = msg;
+    toast.style.background = err ? '#c0392b' : 'var(--green-deep)';
+    toast.className = 'toast show';
+    setTimeout(() => toast.className = 'toast', 3500);
+  }
+
+  function filterProjects() {
+    state.search = document.getElementById('search-input').value.trim();
+    state.status = document.getElementById('filter-status').value;
+    state.sector = document.getElementById('filter-sector').value;
+    state.page = 1;
+    loadProjects();
+  }
+
+  let searchDebounce = null;
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(filterProjects, 400);
+  });
+  document.getElementById('filter-status').addEventListener('change', filterProjects);
+  document.getElementById('filter-sector').addEventListener('change', filterProjects);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadLocations();
+    loadProjects();
+    loadSummary();
+  });
+</script>
+</body>
+</html>

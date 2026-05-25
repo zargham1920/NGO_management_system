@@ -32,12 +32,24 @@
   /* SIDEBAR STUB TO MATCH GRAPHICS */
   .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
   .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
   .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
   .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
   .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
-  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; transition: all 0.18s; }
+  .nav-item svg { flex-shrink: 0; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
   .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .nav-item .badge { margin-left: auto; background: var(--amber); color: var(--green-deep); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; line-height: 1.4; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
 
   /* MAIN WORKSPACE */
   .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
@@ -119,15 +131,73 @@
 
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-name-sm">Umeed-e-Sahar</div>
-    <div class="brand-tag">Foundation RDMS</div>
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
   </div>
-  <div class="sidebar-nav">
-    <a class="nav-item" href="#">📊 Dashboard</a>
-    <a class="nav-item" href="#">👥 Beneficiaries</a>
-    <a class="nav-item active" href="#">💰 Donor Architecture</a>
-    <a class="nav-item" href="#">📦 Warehouse Inventory</a>
-    <a class="nav-item" href="#">🚰 Aid Distribution</a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+      <span class="badge" id="sidebar-beneficiaries-badge">20K</span>
+    </a>
+    <a class="nav-item active" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
+      <div class="user-info">
+        <div class="user-name">Ayesha Malik</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
   </div>
 </aside>
 
@@ -242,33 +312,33 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Donor / Organization Name *</label>
-              <input type="text" placeholder="e.g. British Asian Trust" />
+              <input type="text" id="donor-name" placeholder="e.g. British Asian Trust" />
             </div>
             <div class="form-group">
               <label>Donor Category Classification *</label>
-              <select>
-                <option>NGO</option>
-                <option>Corporate Sponsor</option>
-                <option>Individual Philanthropist</option>
+              <select id="donor-type">
+                <option value="NGO">NGO</option>
+                <option value="Corporate">Corporate Sponsor</option>
+                <option value="Individual">Individual Philanthropist</option>
               </select>
             </div>
             <div class="form-group">
               <label>Email Point-of-Contact (Unique) *</label>
-              <input type="email" placeholder="e.g. grants@batrust.org" />
+              <input type="email" id="donor-email" placeholder="e.g. grants@batrust.org" />
             </div>
             <div class="form-group">
               <label>Contact Phone Connection</label>
-              <input type="text" placeholder="e.g. +44 20 7549" />
+              <input type="text" id="donor-phone" placeholder="e.g. +92 21 345-678" />
             </div>
             <div class="form-group">
               <label>Country Origin Domain *</label>
-              <input type="text" value="Pakistan" placeholder="e.g. United Kingdom" />
+              <input type="text" id="donor-country" value="Pakistan" placeholder="e.g. United Kingdom" />
             </div>
           </div>
         </div>
         <div class="form-footer">
           <button class="btn-secondary" onclick="showView('list')">Cancel</button>
-          <button class="btn-primary" onclick="triggerToast('Donor identity built successfully!')">Save Entity Profile</button>
+          <button class="btn-primary" onclick="saveDonor()">Save Entity Profile</button>
         </div>
       </div>
     </div>
@@ -288,41 +358,37 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Source Donor Record Account *</label>
-              <select>
-                <option>Aga Khan Foundation</option>
-                <option>Zakat Foundation</option>
-                <option>Siddiqsons Group</option>
+              <select id="donation-donor-id">
+                <!-- dynamically loaded -->
               </select>
             </div>
             <div class="form-group">
               <label>Transaction Capital Amount (PKR) *</label>
-              <input type="number" placeholder="₨ Amount in PKR" />
+              <input type="number" id="donation-amount" placeholder="₨ Amount in PKR" />
             </div>
             <div class="form-group">
               <label>Execution Date Matrix *</label>
-              <input type="date" />
+              <input type="date" id="donation-date" />
             </div>
             <div class="form-group">
               <label>Remittance Channel Mechanism *</label>
-              <select>
-                <option>Bank Transfer</option>
-                <option>Cash Account</option>
-                <option>In-Kind Goods Registry</option>
+              <select id="donation-channel">
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cash">Cash Account</option>
+                <option value="In-Kind">In-Kind Goods Registry</option>
               </select>
             </div>
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Initial Allocation Allocation Strategy</label>
-              <select>
-                <option>Retain as Unallocated Reserve Pipeline</option>
-                <option>Pani Project - Tharparkar Water Axis</option>
-                <option>Literacy First - Mobile Tribal Units</option>
+              <label>Initial Allocation Strategy (Project) *</label>
+              <select id="donation-project-id">
+                <!-- dynamically loaded -->
               </select>
             </div>
           </div>
         </div>
         <div class="form-footer">
           <button class="btn-secondary" onclick="showView('list')">Cancel System Entry</button>
-          <button class="btn-primary" onclick="triggerToast('Transaction successfully captured and normalized!')">Execute Inbound Entry</button>
+          <button class="btn-primary" onclick="logDonation()">Execute Inbound Entry</button>
         </div>
       </div>
     </div>
@@ -389,10 +455,51 @@
 </div>
 
 <script>
+  const API_BASE = 'http://localhost:3000/api';
+  let donors = [];
+  let projects = [];
+  let editingDonorId = null;
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
   function showView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-list').style.display = 'none';
-    
     const actions = document.getElementById('topbar-actions');
     const subtitle = document.getElementById('page-subtitle');
     const title = document.getElementById('page-title');
@@ -402,44 +509,202 @@
       title.textContent = "Donor Architecture";
       subtitle.textContent = "Tracking philanthropic relationships and capital tracking accounts";
       actions.style.display = 'flex';
+      loadDonors();
     } else {
       document.getElementById('view-' + viewId).classList.add('active');
       actions.style.display = 'none';
-      if(viewId === 'add-donor') {
-        title.textContent = "Register Portfolio";
-      } else if (viewId === 'log-donation') {
-        title.textContent = "Inbound Capital Entry";
-      }
+      title.textContent = viewId === 'add-donor' ? "Register Portfolio" : "Inbound Capital Entry";
     }
   }
 
-  function viewDonorProfile(name, type, country) {
+  async function loadDonors() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/donors`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      donors = data.data || [];
+      
+      // Update Table
+      const tbody = document.querySelector('tbody');
+      tbody.innerHTML = donors.map((d, idx) => `
+        <tr onclick="viewDonorProfile(${idx})">
+          <td><strong>${d.name || 'N/A'}</strong><br><span style="font-size:11px;color:var(--text-muted)">${d.email || 'N/A'}</span></td>
+          <td><span class="chip chip-blue">${d.type || 'Individual'}</span></td>
+          <td>${d.phone || 'N/A'}</td>
+          <td>${d.country || 'N/A'}</td>
+          <td><strong>₨${Number(d.total_donated || 0).toLocaleString()}</strong></td>
+          <td>
+            <button class="btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="event.stopPropagation(); editDonor(${idx})">Edit</button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;">No donors found.</td></tr>';
+
+      // Update dropdowns
+      const donorSelect = document.getElementById('donation-donor-id');
+      donorSelect.innerHTML = donors.map(d => `<option value="${d.donor_id || d._id}">${d.name}</option>`).join('');
+
+      // Update Summary metrics
+      const nums = document.querySelectorAll('.s-chip-num');
+      if (nums.length >= 3) {
+        const totalCap = donors.reduce((sum, d) => sum + Number(d.total_donated || 0), 0);
+        nums[0].textContent = '₨' + (totalCap / 1000000).toFixed(1) + 'M';
+        nums[1].textContent = donors.length;
+        
+        // Unallocated pipeline (retrieve dashboard summary or hardcode calculation)
+        const unallocated = donors.reduce((sum, d) => sum + (Number(d.total_donated || 0) - Number(d.allocated_amount || 0)), 0);
+        nums[2].textContent = '₨' + (unallocated / 1000000).toFixed(1) + 'M';
+      }
+
+    } catch (err) { triggerToast(`Error: ${err.message}`); }
+  }
+
+  async function loadProjects() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/projects`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      projects = data.data || [];
+      const projSelect = document.getElementById('donation-project-id');
+      projSelect.innerHTML = `<option value="">Retain as Unallocated Reserve Pipeline</option>` +
+        projects.map(p => `<option value="${p.project_id || p._id}">${p.project_name}</option>`).join('');
+    } catch (e) { console.warn(e); }
+  }
+
+  async function saveDonor() {
+    const token = getToken();
+    const name = document.getElementById('donor-name').value.trim();
+    const type = document.getElementById('donor-type').value;
+    const email = document.getElementById('donor-email').value.trim();
+    const phone = document.getElementById('donor-phone').value.trim();
+    const country = document.getElementById('donor-country').value.trim();
+    
+    if (!name || !email) { triggerToast('Donor name and email are required.'); return; }
+    
+    try {
+      let url = `${API_BASE}/donors`;
+      let method = 'POST';
+      if (editingDonorId) {
+        url = `${API_BASE}/donors/${editingDonorId}`;
+        method = 'PUT';
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, type, email, phone, country })
+      });
+      if (res.ok) {
+        triggerToast(editingDonorId ? 'Donor profile updated successfully!' : 'Donor registered successfully!');
+        editingDonorId = null;
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Unable to save donor.');
+      }
+    } catch (err) { triggerToast(`Error: ${err.message}`); }
+  }
+
+  async function logDonation() {
+    const token = getToken();
+    const donor_id = document.getElementById('donation-donor-id').value;
+    const amount = document.getElementById('donation-amount').value;
+    const donation_date = document.getElementById('donation-date').value;
+    const channel = document.getElementById('donation-channel').value;
+    const project_id = document.getElementById('donation-project-id').value || null;
+    
+    if (!amount || amount <= 0 || !donation_date) { triggerToast('Valid amount and date are required.'); return; }
+    
+    try {
+      const res = await fetch(`${API_BASE}/donations`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ donor_id: parseInt(donor_id), amount: parseFloat(amount), donation_date, channel, project_id: project_id ? parseInt(project_id) : null })
+      });
+      if (res.ok) {
+        triggerToast('Transaction captured and budget allocated.');
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error recording transaction.');
+      }
+    } catch (err) { triggerToast(`Error: ${err.message}`); }
+  }
+
+  async function viewDonorProfile(idx) {
+    const d = donors[idx];
+    if (!d) return;
+    const token = getToken();
+    
+    document.getElementById('prof-title-name').textContent = d.name || 'N/A';
+    document.getElementById('prof-type-badge').textContent = (d.type || 'Individual') + ' Entity Account';
+    document.getElementById('prof-country').textContent = d.country || 'N/A';
+    document.getElementById('prof-avatar-box').textContent = (d.name || 'N').split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+    
+    // Fill total contributed
+    document.querySelector('.donor-bio-card .meta-item:nth-child(4) span:last-child').textContent = `₨${Number(d.total_donated || 0).toLocaleString()}`;
+    document.querySelector('.donor-bio-card .meta-item:nth-child(2) span:last-child').textContent = d.email || '—';
+    document.querySelector('.donor-bio-card .meta-item:nth-child(3) span:last-child').textContent = `FK-DON-${d.donor_id || d._id}`;
+
+    // Load donation audit trail
+    const timeline = document.querySelector('.timeline');
+    try {
+      const res = await fetch(`${API_BASE}/donations?donor_id=${d.donor_id || d._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      const donationsList = data.data || [];
+      
+      timeline.innerHTML = donationsList.map(don => `
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-header">
+            <span>₨${Number(don.amount).toLocaleString()} (${don.channel || 'Transfer'})</span>
+            <span class="chip ${don.project_name ? 'chip-green' : 'chip-amber'}">${don.project_name ? 'Allocated' : 'Unallocated'}</span>
+          </div>
+          <div class="timeline-body">
+            Received on ${don.donation_date} · Mapped into <strong>${don.project_name || 'General Pipeline Reserve'}</strong>.
+          </div>
+        </div>
+      `).join('') || '<div style="padding:16px; color:var(--text-muted)">No transactions logged for this donor yet.</div>';
+    } catch (e) {
+      timeline.innerHTML = '<div style="padding:16px; color:var(--text-red)">Error loading transaction logs.</div>';
+    }
+
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-profile').classList.add('active');
     document.getElementById('topbar-actions').style.display = 'none';
-    
     document.getElementById('page-title').textContent = "Donor Profile Insights";
     document.getElementById('page-subtitle').textContent = "Granular audit matrices for individual institutional actors";
-    
-    document.getElementById('prof-title-name').textContent = name;
-    document.getElementById('prof-type-badge').textContent = type + " Entity Account";
-    document.getElementById('prof-country').textContent = country;
-    document.getElementById('prof-avatar-box').textContent = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
   }
 
   function closeProfile() {
     showView('list');
   }
 
+  function editDonor(idx) {
+    const d = donors[idx];
+    if (!d) return;
+    editingDonorId = d.donor_id || d._id;
+    document.getElementById('donor-name').value = d.name || '';
+    document.getElementById('donor-type').value = d.type || 'Individual';
+    document.getElementById('donor-email').value = d.email || '';
+    document.getElementById('donor-phone').value = d.phone || '';
+    document.getElementById('donor-country').value = d.country || 'Pakistan';
+    showView('add-donor');
+  }
+
   function triggerToast(message) {
     const toast = document.getElementById('system-toast');
     document.getElementById('toast-text').textContent = message;
     toast.className = "toast show";
-    setTimeout(() => {
-      toast.className = "toast";
-      showView('list');
-    }, 3000);
+    setTimeout(() => toast.className = "toast", 3500);
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadDonors();
+    loadProjects();
+  });
 </script>
 </body>
 </html>

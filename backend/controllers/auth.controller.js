@@ -2,12 +2,14 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user.model');
+const tokenModel = require('../models/token.model');
 const mailer = require('../utils/mailer');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 const JWT_EXPIRY = process.env.JWT_EXPIRES_IN || '8h';
 const ALLOWED_ROLES = ['NGO Admin', 'Field Worker', 'Finance Officer', 'Auditor'];
 const resetTokens = new Map();
+const REFRESH_TOKEN_EXPIRES_MS = Number(process.env.REFRESH_TOKEN_EXPIRES_MS) || 7 * 24 * 3600 * 1000; // 7 days
 
 function formatUser(user) {
   return {
@@ -91,10 +93,41 @@ async function login(req, res) {
       { expiresIn: JWT_EXPIRY }
     );
 
-    return res.json({ success: true, data: { token, user: formatUser(user) } });
+    // create refresh token
+    const refreshToken = crypto.randomBytes(48).toString('hex');
+    const refreshExpires = Date.now() + REFRESH_TOKEN_EXPIRES_MS;
+    await tokenModel.createToken(user.user_id, refreshToken, refreshExpires);
+
+    return res.json({ success: true, data: { token, refreshToken, user: formatUser(user) } });
   } catch (error) {
     console.error('login error', error);
     return res.status(500).json({ success: false, message: 'Unable to log in.' });
+  }
+}
+
+async function refreshToken(req, res) {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ success: false, message: 'Refresh token is required.' });
+    }
+
+    const stored = await tokenModel.findByToken(refreshToken);
+    if (!stored || stored.expires < Date.now()) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired refresh token.' });
+    }
+
+    const user = await userModel.findById(stored.user_id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    const newAccessToken = jwt.sign({ user_id: user.user_id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+
+    return res.json({ success: true, data: { token: newAccessToken } });
+  } catch (error) {
+    console.error('refreshToken error', error);
+    return res.status(500).json({ success: false, message: 'Unable to refresh token.' });
   }
 }
 
@@ -173,6 +206,11 @@ async function resetPassword(req, res) {
 }
 
 function logout(req, res) {
+  // revoke refresh tokens for the user (if any)
+  const userId = req.user && req.user.user_id;
+  if (userId) {
+    tokenModel.deleteTokensByUser(userId).catch((err) => console.error('logout token delete error', err));
+  }
   return res.json({ success: true, message: 'Logged out successfully.' });
 }
 
@@ -263,6 +301,7 @@ async function rejectUser(req, res) {
 module.exports = {
   register,
   login,
+  refreshToken,
   getRoles,
   forgotPassword,
   resetPassword,

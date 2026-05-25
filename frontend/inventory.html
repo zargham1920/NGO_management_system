@@ -29,15 +29,27 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
 
-  /* SIDEBAR STUB */
+  /* SIDEBAR STYLING - UNIFIED BRANDING */
   .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
   .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
   .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
   .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
   .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; transition: all 0.18s; }
+  .nav-item svg { flex-shrink: 0; }
   .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
   .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .nav-item .badge { margin-left: auto; background: var(--amber); color: var(--green-deep); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; line-height: 1.4; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
 
   /* MAIN WORKSPACE */
   .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
@@ -102,15 +114,73 @@
 
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-name-sm">Umeed-e-Sahar</div>
-    <div class="brand-tag">Foundation RDMS</div>
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
   </div>
-  <div class="sidebar-nav">
-    <a class="nav-item" href="#">📊 Dashboard</a>
-    <a class="nav-item" href="#">👥 Beneficiaries</a>
-    <a class="nav-item" href="#">💰 Donor Architecture</a>
-    <a class="nav-item active" href="#">📦 Warehouse Inventory</a>
-    <a class="nav-item" href="#">🚰 Aid Distribution</a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+      <span class="badge" id="sidebar-beneficiaries-badge">20K</span>
+    </a>
+    <a class="nav-item" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item active" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">AM</div>
+      <div class="user-info">
+        <div class="user-name">Ayesha Malik</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
   </div>
 </aside>
 
@@ -122,7 +192,7 @@
     </div>
     <div class="topbar-right" id="topbar-actions">
       <button class="btn-primary" onclick="showView('add-item')">＋ Provision Material Stock</button>
-      <button class="btn-secondary" onclick="showView('dispatch-stock')">📦 Record Aid Distribution</button>
+      <button class="btn-secondary" onclick="location.href='distributions.html'">📦 Record Aid Distribution</button>
     </div>
   </header>
 
@@ -234,34 +304,32 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Item Descriptive Designation *</label>
-              <input type="text" placeholder="e.g. Reverse Osmosis Filters" />
+              <input type="text" id="item-name" placeholder="e.g. Reverse Osmosis Filters" />
             </div>
             <div class="form-group">
               <label>Logistical Classification Core *</label>
-              <select>
-                <option>Water</option>
-                <option>Medical</option>
-                <option>Education</option>
-                <option>Infrastructure</option>
+              <select id="item-category">
+                <option value="Water">Water Logistics / Pumps</option>
+                <option value="Medical">Medical Emergency Kits</option>
+                <option value="Education">Educational Materials</option>
+                <option value="Infrastructure">Infrastructure Elements</option>
               </select>
             </div>
             <div class="form-group">
               <label>Initial Procurement Volume Count *</label>
-              <input type="number" placeholder="Value mapping constraints (e.g. 50)" />
+              <input type="number" id="item-qty" placeholder="Value mapping constraints (e.g. 50)" />
             </div>
             <div class="form-group">
-              <label>Project Pre-Assignment Linkage (Optional)</label>
-              <select>
-                <option value="">Leave as Shared General Supply Depot</option>
-                <option>Pani Project - Solar Installation Segment</option>
-                <option>Literacy First - Mobile Tribal Units</option>
+              <label>Project Pre-Assignment Linkage *</label>
+              <select id="item-project-id">
+                <!-- dynamically loaded -->
               </select>
             </div>
           </div>
         </div>
         <div class="form-footer">
           <button class="btn-secondary" onclick="showView('list')">Discard Setup</button>
-          <button class="btn-primary" onclick="triggerToast('Item identity safely stored inside relational architecture.')">Initialize Asset Records</button>
+          <button class="btn-primary" onclick="createItem()">Initialize Asset Records</button>
         </div>
       </div>
     </div>
@@ -313,7 +381,7 @@
         </div>
         <div class="form-footer">
           <button class="btn-secondary" onclick="showView('list')">Abort Handshake</button>
-          <button class="btn-primary" onclick="triggerToast('Distribution ledger written and stock constraints reduced.')">Authorize Resource Dispatch</button>
+          <button class="btn-primary" onclick="createDistribution()">Authorize Resource Dispatch</button>
         </div>
       </div>
     </div>
@@ -326,49 +394,219 @@
 </div>
 
 <script>
+  const API_BASE = 'http://localhost:3000/api';
+  let inventoryItems = [];
+  let projectsList = [];
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
   function showView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-list').style.display = 'none';
-    
     const actions = document.getElementById('topbar-actions');
     const title = document.getElementById('page-title');
-    const subtitle = document.getElementById('page-subtitle');
-
     if(viewId === 'list') {
       document.getElementById('view-list').classList.add('active');
       title.textContent = "Warehouse Inventory";
-      subtitle.textContent = "Logistical governance, emergency stockpiles, and distribution tracking controls";
       actions.style.display = 'flex';
+      loadInventory();
     } else {
       document.getElementById('view-' + viewId).classList.add('active');
       actions.style.display = 'none';
-      if(viewId === 'add-item') {
-        title.textContent = "Provision Supply Profile";
-      } else if (viewId === 'dispatch-stock') {
-        title.textContent = "Execute Distribution Entry";
+    }
+  }
+
+  async function loadProjects() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/projects`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      projectsList = data.data || [];
+      const projSelect = document.getElementById('item-project-id');
+      projSelect.innerHTML = `<option value="">— Select Target Project —</option>` +
+        projectsList.map(p => `<option value="${p.project_id || p._id}">${p.project_name}</option>`).join('');
+    } catch (e) { console.warn(e); }
+  }
+
+  function getStatusChip(qty) {
+    if (qty <= 0) return '<span class="chip chip-red">Out of Stock</span>';
+    if (qty <= 10) return '<span class="chip chip-amber">Low Stock</span>';
+    return '<span class="chip chip-green">In Stock</span>';
+  }
+
+  async function loadInventory() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/inventory`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      inventoryItems = data.data || [];
+      
+      renderTable(inventoryItems);
+      
+      // Update Summary metrics
+      const nums = document.querySelectorAll('.s-chip-num');
+      if (nums.length >= 3) {
+        const totalItems = inventoryItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+        const categories = [...new Set(inventoryItems.map(item => item.category))];
+        const criticalItems = inventoryItems.filter(item => Number(item.quantity || 0) <= 10).length;
+        
+        nums[0].textContent = totalItems.toLocaleString();
+        nums[1].textContent = categories.length;
+        nums[2].textContent = `${criticalItems} Items`;
       }
+    } catch (err) { triggerToast(`Error: ${err.message}`, true); }
+  }
+
+  function renderTable(items) {
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = items.map(item => `
+      <tr>
+        <td><strong>${item.item_name}</strong><br><span style="font-size:11px;color:var(--text-muted)">Item ID: #${item.item_id || item._id}</span></td>
+        <td>${item.category || '—'}</td>
+        <td><strong>${item.quantity || 0} Units</strong></td>
+        <td>${item.project_name || 'General Reserve'}</td>
+        <td>${getStatusChip(Number(item.quantity || 0))}</td>
+        <td>
+          <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="editStock(${item.item_id || item._id}, '${item.item_name}', ${item.quantity})">Modify</button>
+        </td>
+      </tr>
+    `).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;">No inventory items registered.</td></tr>';
+  }
+
+  function editStock(id, name, qty) {
+    const n = prompt(`Update stock level for "${name}":`, qty);
+    if (n !== null && !isNaN(n)) {
+      updateStock(id, parseInt(n));
     }
   }
 
-  function adjustStock(itemName, currentStock) {
-    const newVal = prompt("Database Adjustment Trigger for [" + itemName + "]:\nEnter updated inventory total count:", currentStock);
-    if(newVal !== null && newVal !== "") {
-      document.getElementById('toast-text').textContent = "Updated inventory level saved successfully to database pipeline.";
-      const toast = document.getElementById('system-toast');
-      toast.className = "toast show";
-      setTimeout(() => toast.className = "toast", 3000);
-    }
+  async function updateStock(id, qty) {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/inventory/${id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: qty })
+      });
+      if (res.ok) {
+        triggerToast('Stock quantity updated successfully.', false);
+        loadInventory();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error updating stock.', true);
+      }
+    } catch (err) { triggerToast(`Error: ${err.message}`, true); }
   }
 
-  function triggerToast(message) {
+  async function createItem() {
+    const token = getToken();
+    const item_name = document.getElementById('item-name').value.trim();
+    const category = document.getElementById('item-category').value;
+    const quantity = document.getElementById('item-qty').value;
+    const project_id = document.getElementById('item-project-id').value;
+
+    if (!item_name || !quantity || !project_id) { 
+      triggerToast('Item name, quantity, and project allocation are required.', true); 
+      return; 
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/inventory`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_name,
+          category,
+          quantity: parseInt(quantity),
+          project_id: parseInt(project_id)
+        })
+      });
+      if (res.ok) {
+        triggerToast('New material asset captured successfully.', false);
+        setTimeout(() => showView('list'), 1000);
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error saving inventory item.', true);
+      }
+    } catch (err) { triggerToast(`Error: ${err.message}`, true); }
+  }
+
+  function triggerToast(msg, err = false) {
     const toast = document.getElementById('system-toast');
-    document.getElementById('toast-text').textContent = message;
-    toast.className = "toast show";
-    setTimeout(() => {
-      toast.className = "toast";
-      showView('list');
-    }, 3000);
+    document.getElementById('toast-text').textContent = msg;
+    toast.style.background = err ? '#c0392b' : 'var(--green-deep)';
+    toast.className = 'toast show';
+    setTimeout(() => toast.className = 'toast', 3500);
   }
+
+  function filterInventory() {
+    const query = document.querySelector('.search-input-wrap input').value.toLowerCase();
+    const category = document.querySelectorAll('.filter-bar select')[0].value;
+    const stockTier = document.querySelectorAll('.filter-bar select')[1].value;
+
+    let filtered = inventoryItems;
+    if (query) {
+      filtered = filtered.filter(item => item.item_name.toLowerCase().includes(query));
+    }
+    if (category && category !== 'All Product Categories') {
+      filtered = filtered.filter(item => item.category === category);
+    }
+    if (stockTier && stockTier !== 'All Stocking Tiers') {
+      filtered = filtered.filter(item => {
+        const qty = Number(item.quantity || 0);
+        if (stockTier === 'In Stock (Healthy)') return qty > 10;
+        if (stockTier === 'Low Volume Warnings') return qty > 0 && qty <= 10;
+        if (stockTier === 'Depleted (Out of Stock)') return qty <= 0;
+        return true;
+      });
+    }
+    renderTable(filtered);
+  }
+
+  // Bind filters
+  document.querySelector('.search-input-wrap input').addEventListener('input', filterInventory);
+  document.querySelectorAll('.filter-bar select').forEach(sel => sel.addEventListener('change', filterInventory));
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadProjects();
+    loadInventory();
+  });
 </script>
 </body>
 </html>

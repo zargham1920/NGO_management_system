@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aid Distribution – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --sand-dark: #e8d5b7;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 6px 18px rgba(45,106,79,0.3); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  .btn-danger { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: none; background: var(--red); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; }
+  .btn-danger:hover { background: #a83226; }
+  
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* KPI CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 180px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CONTROL BAR */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .search-input-wrap { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; flex: 1; min-width: 220px; }
+  .search-input-wrap input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; width: 100%; }
+  select, input[type="date"] { padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: var(--white); outline: none; cursor: pointer; }
+  .filter-reset { font-size: 12px; color: var(--text-muted); cursor: pointer; text-decoration: underline; margin-left: auto; }
+  .filter-reset:hover { color: var(--green-mid); }
+
+  /* TABLES */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+  .chip-gray { background: #f0ede8; color: #666; }
+
+  .qty-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--blue-pale); color: var(--blue); padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .action-btns { display: flex; gap: 6px; }
+
+  /* MODALS & OVERLAYS */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,60,46,0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+  .overlay.active { display: flex; }
+  .modal { background: var(--white); border-radius: 20px; padding: 32px; width: 500px; max-width: 90vw; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid var(--border); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 12px; color: var(--text-dark); }
+  .modal p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+  .btn-cancel { padding: 10px 18px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .btn-cancel:hover { border-color: var(--text-dark); }
+  
+  /* FORM GROUPS */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full-width { grid-column: 1 / -1; }
+  .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dark); }
+  .form-group label.required::after { content: ' *'; color: var(--red); }
+  .form-group select, .form-group input, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); outline: none; }
+  .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--green-mid); }
+  .form-error { font-size: 11px; color: var(--red); margin-top: 2px; }
+  .form-error.hidden { display: none; }
+
+  /* Stock preview */
+  .stock-preview { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-top: 6px; border: 1px solid transparent; }
+  .stock-preview.healthy { background: var(--green-pale); color: var(--green-deep); border-color: var(--green-light); }
+  .stock-preview.low { background: var(--amber-pale); color: #92400e; border-color: #fcd34d; }
+  .stock-preview.critical { background: var(--red-pale); color: var(--red); border-color: #fca5a5; }
+  .stock-bar-wrap { flex: 1; height: 6px; background: rgba(0,0,0,.08); border-radius: 99px; overflow: hidden; }
+  .stock-bar { height: 100%; border-radius: 99px; transition: width .4s ease; }
+  .healthy .stock-bar { background: var(--green-mid); }
+  .low .stock-bar { background: var(--amber); }
+  .critical .stock-bar { background: var(--red); }
+  .stock-preview.hidden { display: none; }
+
+  /* Warning Box */
+  .warning-box { background: var(--red-pale); border: 1px solid #fca5a5; border-radius: 10px; padding: 12px 14px; font-size: 12.5px; color: var(--red); display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; }
+  
+  /* Details List */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .detail-item label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .detail-item p { font-size: 13.5px; font-weight: 550; color: var(--text-dark); }
+  .detail-item.full { grid-column: 1 / -1; }
+
+  /* TOAST SYSTEM */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+  .toast.error { background: var(--red); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+    </a>
+    <a class="nav-item" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item active" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">U</div>
+      <div class="user-info">
+        <div class="user-name">Loading User</div>
+        <div class="user-role">Role</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>🚚 Aid Distribution Logs</h1>
+      <p>Log, view, and authorize resource dispatches to beneficiaries</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-primary" id="btn-add-dist" onclick="openRecordModal()">＋ Record Distribution</button>
+    </div>
+  </header>
+
+  <div class="content">
+    
+    <!-- KPI SUMMARY CHIPS -->
+    <div class="summary-chips">
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--green-light)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-total">—</div>
+          <div class="s-chip-label">Total Distributions</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--blue)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-beneficiaries">—</div>
+          <div class="s-chip-label">Beneficiaries Reached</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--amber)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-units">—</div>
+          <div class="s-chip-label">Total Units Dispatched</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:#8b5cf6"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-month">—</div>
+          <div class="s-chip-label">Dispatched This Month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="filter-search" placeholder="Search beneficiary name or ID..." oninput="debounceFilter()"/>
+      </div>
+      
+      <select id="filter-project" onchange="applyFilters()">
+        <option value="">All Projects</option>
+      </select>
+
+      <input type="date" id="filter-from" title="From Date" onchange="applyFilters()"/>
+      <input type="date" id="filter-to" title="To Date" onchange="applyFilters()"/>
+      
+      <span class="filter-reset" onclick="resetFilters()">✕ Clear Filters</span>
+    </div>
+
+    <!-- DATATABLE -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Beneficiary</th>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Qty</th>
+            <th>Project</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="dist-tbody">
+          <tr><td colspan="8" style="text-align:center;padding:24px;">Loading aid distribution records...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+      <!-- pagination controls -->
+    </div>
+
+  </div>
+</main>
+
+<!-- RECORD DISTRIBUTION MODAL -->
+<div class="overlay" id="modal-record">
+  <div class="modal">
+    <h3>🚚 Record Aid Distribution</h3>
+    <p>Dispatch a warehoused material asset item to an approved beneficiary under project parameters.</p>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="required">Project</label>
+        <select id="f-project" onchange="clearError('f-project','err-project')">
+          <option value="">— Select project —</option>
+        </select>
+        <div class="form-error hidden" id="err-project">Please select a project.</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="required">Beneficiary</label>
+        <select id="f-beneficiary" onchange="clearError('f-beneficiary','err-beneficiary')">
+          <option value="">— Select beneficiary —</option>
+        </select>
+        <div class="form-error hidden" id="err-beneficiary">Please select a beneficiary.</div>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="required">Item to Dispatch</label>
+        <select id="f-item" onchange="onItemChange()">
+          <option value="">— Select inventory item —</option>
+        </select>
+        <div class="form-error hidden" id="err-item">Please select an item.</div>
+        
+        <!-- Stock preview -->
+        <div id="stock-preview" class="stock-preview hidden">
+          <span id="stock-text">Available: 0</span>
+          <div class="stock-bar-wrap"><div class="stock-bar" id="stock-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="required">Quantity</label>
+        <input type="number" id="f-qty" min="1" placeholder="e.g. 5" oninput="onQtyInput()"/>
+        <div class="form-error hidden" id="err-qty">Enter a valid quantity.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="required">Date</label>
+        <input type="date" id="f-date"/>
+        <div class="form-error hidden" id="err-date">Please select a date.</div>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Distribution Notes</label>
+        <textarea id="f-notes" rows="2" placeholder="Specify any unique distribution circumstances, serial numbers, or observations..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeRecordModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitDistribution()">Authorize Dispatch</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW DETAILS MODAL -->
+<div class="overlay" id="modal-view">
+  <div class="modal">
+    <h3>📋 Distribution Details</h3>
+    <p>Detailed log information for authorized dispatch record.</p>
+    
+    <div class="detail-grid" id="view-detail-grid">
+      <!-- loaded dynamically -->
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeViewModal()">Close Details</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="overlay" id="modal-delete">
+  <div class="modal">
+    <h3>⚠️ Delete Distribution Record?</h3>
+    <p>Are you sure you want to permanently delete distribution record <strong id="del-dist-id">#—</strong>? This action cannot be undone.</p>
+    
+    <div class="warning-box">
+      <span>⚠️ <strong>Stock Reversal:</strong> Deleting this log will restore <strong id="del-qty">—</strong> unit(s) of <strong id="del-item">—</strong> back into the inventory warehouse.</span>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="executeDelete()">Yes, Delete & Reverse Stock</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="system-toast">
+  <span id="toast-text">Toast message</span>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  let distributions = [];
+  let inventoryItems = [];
+  let deleteId = null;
+  let deleteQty = 0;
+  let deleteItemName = '';
+  let filterDebounce = null;
+
+  let state = {
+    page: 1,
+    limit: 15,
+    totalPages: 1,
+    total: 0,
+    search: '',
+    projectId: '',
+    fromDate: '',
+    toDate: ''
+  };
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function loadUserProfile() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) return;
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      // Admin elements visibility
+      if (profile.role === 'NGO Admin') {
+        const adminSec = document.getElementById('admin-nav-section');
+        if (adminSec) adminSec.style.display = 'block';
+      }
+      
+      // Hiding Record action for restricted roles (e.g. Finance Officer, Auditor)
+      if (profile.role !== 'NGO Admin' && profile.role !== 'Field Worker') {
+        document.getElementById('btn-add-dist').style.display = 'none';
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // API Call: Summary
+  async function loadSummary() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/distributions/summary`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const resData = await res.json();
+      const s = resData.data || resData || {};
+
+      document.getElementById('kpi-total').textContent = (s.total_distributions ?? s.totalDistributions ?? 0).toLocaleString();
+      document.getElementById('kpi-beneficiaries').textContent = (s.unique_beneficiaries ?? s.uniqueBeneficiaries ?? 0).toLocaleString();
+      document.getElementById('kpi-units').textContent = (s.total_units ?? s.totalUnits ?? 0).toLocaleString();
+      document.getElementById('kpi-month').textContent = (s.this_month ?? s.thisMonth ?? 0).toLocaleString();
+    } catch (e) { console.warn(e); }
+  }
+
+  // API Call: Load list
+  async function loadDistributions() {
+    const token = getToken();
+    const tbody = document.getElementById('dist-tbody');
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;">Loading aid distribution records...</td></tr>`;
+
+    try {
+      const params = new URLSearchParams({
+        page: state.page,
+        limit: state.limit,
+        project_id: state.projectId,
+        from_date: state.fromDate,
+        to_date: state.toDate
+      });
+      
+      const res = await fetch(`${API_BASE}/distributions?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const resData = await res.json();
+      const rows = resData.data || resData.distributions || [];
+      const meta = resData.meta || resData.pagination || {};
+      
+      state.total = meta.total || rows.length;
+      state.totalPages = meta.totalPages || meta.total_pages || 1;
+
+      // Client-side search filtering (since backend might not filter by search term directly)
+      const term = state.search.trim().toLowerCase();
+      const filtered = term
+        ? rows.filter(r => 
+            (r.beneficiary_name || r.beneficiary || '').toLowerCase().includes(term) ||
+            String(r.id || r.distribution_id || '').includes(term)
+          )
+        : rows;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted);">No distribution logs matching filters.</td></tr>`;
+        renderPagination(0);
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem('rdmsUser') || '{}');
+      const isAdmin = user.role === 'NGO Admin';
+
+      tbody.innerHTML = filtered.map(r => {
+        const id = r.id || r.distribution_id || '—';
+        const date = fmtDate(r.distribution_date || r.created_at);
+        const beneName = r.beneficiary_name || r.beneficiary || `Beneficiary #${r.beneficiary_id}`;
+        const itemName = r.item_name || r.item || `Item #${r.item_id}`;
+        const cat = r.category || r.item_category || '—';
+        const qty = r.quantity_given ?? r.quantity ?? 0;
+        const projName = r.project_name || r.project || `Project #${r.project_id}`;
+
+        const delBtn = isAdmin ? `<button class="btn-secondary" style="padding:4px 10px;font-size:11px;color:var(--red);border-color:var(--red);" onclick="openDeleteModal(${id}, '${escHtml(itemName)}', ${qty})">Delete</button>` : '';
+
+        return `
+          <tr>
+            <td><span class="chip chip-gray">#${id}</span></td>
+            <td style="white-space:nowrap">${date}</td>
+            <td><strong>${escHtml(beneName)}</strong></td>
+            <td>${escHtml(itemName)}</td>
+            <td><span class="chip chip-blue">${escHtml(cat)}</span></td>
+            <td><span class="qty-chip">📦 ${qty}</span></td>
+            <td>${escHtml(projName)}</td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick='viewDetails(${JSON.stringify(r)})'>View</button>
+                ${delBtn}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderPagination(state.total);
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--red);">Error loading distributions: ${err.message}</td></tr>`;
+    }
+  }
+
+  function renderPagination(total) {
+    const container = document.querySelector('.pagination');
+    if (!container) return;
+    const start = total === 0 ? 0 : ((state.page - 1) * state.limit) + 1;
+    const end = Math.min(state.page * state.limit, total);
+
+    let btns = `<button class="page-btn" ${state.page <= 1 ? 'disabled' : ''} onclick="changePage(${state.page - 1})">‹</button>`;
+    for (let i = 1; i <= state.totalPages; i++) {
+      btns += `<button class="page-btn ${state.page === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    btns += `<button class="page-btn" ${state.page >= state.totalPages ? 'disabled' : ''} onclick="changePage(${state.page + 1})">›</button>`;
+
+    container.innerHTML = `
+      <span>Showing ${start}–${end} of ${total} dispatches</span>
+      <div class="page-btns">${btns}</div>
+    `;
+  }
+
+  function changePage(p) {
+    state.page = p;
+    loadDistributions();
+  }
+
+  // Load Dropdowns
+  async function loadDropdowns() {
+    const token = getToken();
+    try {
+      const [projRes, beneRes, itemRes] = await Promise.all([
+        fetch(`${API_BASE}/projects?limit=100`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_BASE}/beneficiaries?limit=200`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_BASE}/inventory/dropdown`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+
+      if (projRes.ok) {
+        const pData = await projRes.json();
+        const projects = pData.data || pData.projects || [];
+        
+        // Filter bar project select
+        const fProj = document.getElementById('filter-project');
+        fProj.innerHTML = '<option value="">All Projects</option>';
+        projects.forEach(p => {
+          fProj.innerHTML += `<option value="${p.project_id || p.id}">${p.project_name || p.name}</option>`;
+        });
+
+        // Form project select
+        const formProj = document.getElementById('f-project');
+        formProj.innerHTML = '<option value="">— Select project —</option>';
+        projects.forEach(p => {
+          formProj.innerHTML += `<option value="${p.project_id || p.id}">${p.project_name || p.name}</option>`;
+        });
+      }
+
+      if (beneRes.ok) {
+        const bData = await beneRes.json();
+        const benes = bData.data || bData.beneficiaries || [];
+        const formBene = document.getElementById('f-beneficiary');
+        formBene.innerHTML = '<option value="">— Select beneficiary —</option>';
+        benes.forEach(b => {
+          if (b.status === 'approved' || b.status === 'Approved' || b.status === 'active' || b.status === 'Active') {
+            const name = b.name || b.full_name;
+            const cnic = b.cnic ? ` (${b.cnic})` : '';
+            formBene.innerHTML += `<option value="${b.beneficiary_id || b.id}">${name}${cnic}</option>`;
+          }
+        });
+      }
+
+      if (itemRes.ok) {
+        const iData = await itemRes.json();
+        inventoryItems = iData.data || iData.items || [];
+        const formItem = document.getElementById('f-item');
+        formItem.innerHTML = '<option value="">— Select inventory item —</option>';
+        inventoryItems.forEach(item => {
+          const qty = item.quantity ?? item.quantity_available ?? 0;
+          formItem.innerHTML += `<option value="${item.item_id || item.id}" data-qty="${qty}">${item.item_name || item.name} (Avail: ${qty})</option>`;
+        });
+      }
+    } catch (e) { console.warn(e); }
+  }
+
+  // Modals operations
+  function openRecordModal() {
+    ['f-project', 'f-beneficiary', 'f-item', 'f-qty', 'f-notes'].forEach(id => {
+      document.getElementById(id).value = '';
+      clearError(id, 'err-' + id.split('-')[1]);
+    });
+    
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('stock-preview').className = 'stock-preview hidden';
+    document.getElementById('modal-record').classList.add('active');
+  }
+
+  function closeRecordModal() {
+    document.getElementById('modal-record').classList.remove('active');
+  }
+
+  function onItemChange() {
+    const sel = document.getElementById('f-item');
+    const opt = sel.options[sel.selectedIndex];
+    const qty = parseInt(opt?.dataset?.qty ?? '-1', 10);
+    
+    const preview = document.getElementById('stock-preview');
+    const bar = document.getElementById('stock-bar');
+    const text = document.getElementById('stock-text');
+
+    clearError('f-item', 'err-item');
+
+    if (!sel.value || qty < 0) {
+      preview.className = 'stock-preview hidden';
+      return;
+    }
+
+    preview.className = 'stock-preview';
+    text.textContent = `Available stock: ${qty} unit${qty !== 1 ? 's' : ''}`;
+
+    if (qty === 0) {
+      preview.classList.add('critical');
+      bar.style.width = '100%';
+      text.textContent = `⚠️ Out of stock – cannot distribute`;
+      document.getElementById('f-qty').value = '';
+      document.getElementById('f-qty').disabled = true;
+    } else {
+      document.getElementById('f-qty').disabled = false;
+      const pct = Math.min(100, (qty / 100) * 100);
+      if (qty <= 5) {
+        preview.classList.add('critical');
+      } else if (qty <= 20) {
+        preview.classList.add('low');
+      } else {
+        preview.classList.add('healthy');
+      }
+      bar.style.width = pct + '%';
+    }
+
+    onQtyInput();
+  }
+
+  function onQtyInput() {
+    const sel = document.getElementById('f-item');
+    const opt = sel.options[sel.selectedIndex];
+    const avail = parseInt(opt?.dataset?.qty ?? '0', 10);
+    const entered = parseInt(document.getElementById('f-qty').value, 10);
+    const err = document.getElementById('err-qty');
+
+    if (isNaN(entered) || entered <= 0) {
+      err.classList.add('hidden');
+      return;
+    }
+
+    if (entered > avail) {
+      showError('f-qty', 'err-qty', `Exceeds available stock (${avail}).`);
+    } else {
+      clearError('f-qty', 'err-qty');
+    }
+  }
+
+  // Submit Distribution
+  async function submitDistribution() {
+    const token = getToken();
+    const project_id = document.getElementById('f-project').value;
+    const beneficiary_id = document.getElementById('f-beneficiary').value;
+    const item_id = document.getElementById('f-item').value;
+    const qtyRaw = document.getElementById('f-qty').value;
+    const date = document.getElementById('f-date').value;
+    const notes = document.getElementById('f-notes').value.trim();
+
+    let valid = true;
+    if (!project_id) { showError('f-project', 'err-project', 'Please select a project.'); valid = false; }
+    if (!beneficiary_id) { showError('f-beneficiary', 'err-beneficiary', 'Please select a beneficiary.'); valid = false; }
+    if (!item_id) { showError('f-item', 'err-item', 'Please select an item.'); valid = false; }
+    if (!date) { showError('f-date', 'err-date', 'Please select a date.'); valid = false; }
+
+    const quantity = parseInt(qtyRaw, 10);
+    if (!qtyRaw || isNaN(quantity) || quantity <= 0) {
+      showError('f-qty', 'err-qty', 'Please enter a valid quantity.');
+      valid = false;
+    } else {
+      const sel = document.getElementById('f-item');
+      const opt = sel.options[sel.selectedIndex];
+      const avail = parseInt(opt?.dataset?.qty ?? '0', 10);
+      if (quantity > avail) {
+        showError('f-qty', 'err-qty', `Exceeds available stock (${avail}).`);
+        valid = false;
+      }
+    }
+
+    if (!valid) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/distributions`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          project_id: parseInt(project_id),
+          beneficiary_id: parseInt(beneficiary_id),
+          item_id: parseInt(item_id),
+          quantity_given: quantity,
+          distribution_date: date,
+          notes: notes || undefined
+        })
+      });
+
+      if (res.ok) {
+        triggerToast('Aid distribution authorized and logged successfully!', false);
+        closeRecordModal();
+        loadDistributions();
+        loadSummary();
+        loadDropdowns();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error recording distribution.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  // View Details
+  function viewDetails(r) {
+    const grid = document.getElementById('view-detail-grid');
+    grid.innerHTML = `
+      <div class="detail-item">
+        <label>Distribution Log ID</label>
+        <p><span class="chip chip-gray">#${r.id || r.distribution_id}</span></p>
+      </div>
+      <div class="detail-item">
+        <label>Date Authorized</label>
+        <p>${fmtDate(r.distribution_date || r.created_at)}</p>
+      </div>
+      <div class="detail-item">
+        <label>Target Beneficiary</label>
+        <p><strong>${escHtml(r.beneficiary_name || r.beneficiary || `Beneficiary #${r.beneficiary_id}`)}</strong></p>
+      </div>
+      <div class="detail-item">
+        <label>Project Scope</label>
+        <p>${escHtml(r.project_name || r.project || `Project #${r.project_id}`)}</p>
+      </div>
+      <div class="detail-item">
+        <label>Material Resource</label>
+        <p>${escHtml(r.item_name || r.item || `Item #${r.item_id}`)}</p>
+      </div>
+      <div class="detail-item">
+        <label>Category</label>
+        <p><span class="chip chip-blue">${escHtml(r.category || r.item_category || '—')}</span></p>
+      </div>
+      <div class="detail-item">
+        <label>Dispatched Volume</label>
+        <p><span class="qty-chip">📦 ${r.quantity_given ?? r.quantity ?? 0} unit(s)</span></p>
+      </div>
+      <div class="detail-item">
+        <label>Executing Location</label>
+        <p>${escHtml(r.location || r.project_location || '—')}</p>
+      </div>
+      <div class="detail-item">
+        <label>Recorded By</label>
+        <p>${escHtml(r.recorded_by || r.created_by_name || '—')}</p>
+      </div>
+      <div class="detail-item">
+        <label>Database Entry</label>
+        <p>${fmtDate(r.created_at)}</p>
+      </div>
+      <div class="detail-item full">
+        <label>Operational Notes</label>
+        <p style="white-space:pre-wrap;">${escHtml(r.notes || r.distribution_notes || 'No notes logged.')}</p>
+      </div>
+    `;
+    document.getElementById('modal-view').classList.add('active');
+  }
+
+  function closeViewModal() {
+    document.getElementById('modal-view').classList.remove('active');
+  }
+
+  // Delete Distribution (Admin only)
+  function openDeleteModal(id, itemName, qty) {
+    deleteId = id;
+    deleteQty = qty;
+    deleteItemName = itemName;
+    
+    document.getElementById('del-dist-id').textContent = '#' + id;
+    document.getElementById('del-qty').textContent = qty;
+    document.getElementById('del-item').textContent = itemName;
+    document.getElementById('modal-delete').classList.add('active');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('modal-delete').classList.remove('active');
+  }
+
+  async function executeDelete() {
+    const token = getToken();
+    closeDeleteModal();
+    try {
+      const res = await fetch(`${API_BASE}/distributions/${deleteId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        triggerToast('Distribution deleted and inventory stock reversed.', false);
+        loadDistributions();
+        loadSummary();
+        loadDropdowns();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Error deleting distribution.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  // Validation Helpers
+  function showError(fieldId, errId, msg) {
+    document.getElementById(fieldId).style.borderColor = 'var(--red)';
+    const err = document.getElementById(errId);
+    err.textContent = msg;
+    err.classList.remove('hidden');
+  }
+
+  function clearError(fieldId, errId) {
+    document.getElementById(fieldId).style.borderColor = 'var(--border)';
+    document.getElementById(errId).classList.add('hidden');
+  }
+
+  // Filter actions
+  function debounceFilter() {
+    clearTimeout(filterDebounce);
+    filterDebounce = setTimeout(() => {
+      state.search = document.getElementById('filter-search').value;
+      state.page = 1;
+      loadDistributions();
+    }, 400);
+  }
+
+  function applyFilters() {
+    state.projectId = document.getElementById('filter-project').value;
+    state.fromDate = document.getElementById('filter-from').value;
+    state.toDate = document.getElementById('filter-to').value;
+    state.page = 1;
+    loadDistributions();
+  }
+
+  function resetFilters() {
+    document.getElementById('filter-search').value = '';
+    document.getElementById('filter-project').value = '';
+    document.getElementById('filter-from').value = '';
+    document.getElementById('filter-to').value = '';
+    state.search = '';
+    state.projectId = '';
+    state.fromDate = '';
+    state.toDate = '';
+    state.page = 1;
+    loadDistributions();
+  }
+
+  // Formatting helpers
+  function fmtDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function escHtml(str) {
+    if (str === null || str === undefined) return '—';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function triggerToast(msg, err = false) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = msg;
+    toast.className = err ? 'toast show error' : 'toast show';
+    setTimeout(() => toast.className = 'toast', 3500);
+  }
+
+  // Listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    loadDropdowns();
+    loadSummary();
+    loadDistributions();
+  });
+</script>
+</body>
+</html>

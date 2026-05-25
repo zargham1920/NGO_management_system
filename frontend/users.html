@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>User Management – RDMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-deep: #1a3c2e;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --sand: #f4e9d6;
+    --sand-dark: #e8d5b7;
+    --amber: #e09f3e;
+    --amber-pale: #fdf3e1;
+    --red: #c0392b;
+    --red-pale: #fdecea;
+    --blue: #2563eb;
+    --blue-pale: #eff6ff;
+    --white: #fdfaf5;
+    --bg: #f6f4ef;
+    --text-dark: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e2d9cc;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar-w); background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+  .sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-logo-sm { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .brand-logo-sm svg { width: 20px; height: 20px; }
+  .brand-name-sm { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); line-height: 1.3; }
+  .brand-tag { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--green-mid); color: #fff; font-weight: 600; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+  .user-card:hover { background: rgba(255,255,255,0.06); }
+  .avatar { width: 34px; height: 34px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--green-deep); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN WORKSPACE */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .topbar-left p { font-size: 12px; color: var(--text-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  /* REUSABLE STYLING */
+  .btn-primary { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 8px; border: none; background: var(--green-deep); font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  .btn-danger { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 8px; border: none; background: var(--red); font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600; color: #fff; cursor: pointer; }
+  .btn-danger:hover { background: #a83226; }
+  
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* KPI CHIPS */
+  .summary-chips { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .s-chip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; min-width: 180px; flex: 1; }
+  .s-chip-num { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); font-weight: 700; }
+  .s-chip-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CONTROL BAR */
+  .filter-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+
+  /* TABLES */
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:hover { background: #f9f7f3; }
+  tbody td { padding: 14px 16px; font-size: 13.5px; }
+
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .chip-green { background: var(--green-pale); color: var(--green-mid); }
+  .chip-amber { background: var(--amber-pale); color: #b7791f; }
+  .chip-blue { background: var(--blue-pale); color: var(--blue); }
+  .chip-red { background: var(--red-pale); color: var(--red); }
+  .chip-gray { background: #f0ede8; color: #666; }
+
+  .action-btns { display: flex; gap: 6px; }
+
+  /* MODALS & OVERLAYS */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,60,46,0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+  .overlay.active { display: flex; }
+  .modal { background: var(--white); border-radius: 20px; padding: 32px; width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid var(--border); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 12px; color: var(--text-dark); }
+  .modal p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .modal-btns { display: flex; justify-content: flex-end; gap: 12px; }
+  .btn-cancel { padding: 10px 18px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+
+  /* TOAST SYSTEM */
+  .toast { position: fixed; bottom: -60px; right: 32px; background: var(--green-deep); color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-weight: 500; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+  .toast.show { bottom: 32px; }
+  .toast.error { background: var(--red); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="brand-name-sm">Umeed-e-Sahar<br>Foundation</div>
+    <div class="brand-tag">RDMS v1.0</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item" href="rdms-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label">Modules</div>
+    <a class="nav-item" href="rdms-beneficiaries.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Beneficiaries
+    </a>
+    <a class="nav-item" href="donor module.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Donors & Funding
+    </a>
+    <a class="nav-item" href="projects.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="inventory.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Inventory
+    </a>
+    <a class="nav-item" href="volunteers.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Volunteers
+    </a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" href="distributions.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Aid Distribution
+    </a>
+    <a class="nav-item" href="reports.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reports & Export
+    </a>
+    <div id="admin-nav-section" style="display:none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px;">
+      <div class="nav-section-label">Administration</div>
+      <a class="nav-item active" href="users.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        User Management
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="logoutUser()">
+      <div class="avatar" id="sidebar-user-avatar">U</div>
+      <div class="user-info">
+        <div class="user-name">Loading User</div>
+        <div class="user-role">Role</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>⚙️ User Management</h1>
+      <p>Approve, reject, and configure system operational accounts</p>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- KPI Cards -->
+    <div class="summary-chips">
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--blue)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-total">—</div>
+          <div class="s-chip-label">Total Users</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--amber)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-pending">—</div>
+          <div class="s-chip-label">Pending Approval</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--green-light)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-approved">—</div>
+          <div class="s-chip-label">Approved</div>
+        </div>
+      </div>
+      <div class="s-chip">
+        <div class="s-chip-dot" style="background:var(--red)"></div>
+        <div>
+          <div class="s-chip-num" id="kpi-rejected">—</div>
+          <div class="s-chip-label">Rejected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab filters -->
+    <div class="filter-bar">
+      <button class="btn-primary" id="tab-all" onclick="filterTab('all')">All Accounts</button>
+      <button class="btn-secondary" id="tab-pending" onclick="filterTab('pending')">⏳ Pending</button>
+      <button class="btn-secondary" id="tab-approved" onclick="filterTab('approved')">✅ Approved</button>
+      <button class="btn-secondary" id="tab-rejected" onclick="filterTab('rejected')">🚫 Rejected</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Designation / Role</th>
+            <th>Approval Status</th>
+            <th>Registered Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="7" style="text-align:center;padding:24px;">Loading accounts roster...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- REVOKE/REJECT CONFIRMATION MODAL -->
+<div class="overlay" id="confirm-modal">
+  <div class="modal">
+    <h3>⚠️ Confirm Action</h3>
+    <p>Are you sure you want to reject or revoke system access permissions for this user account?</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-danger" onclick="executeConfirmReject()">Reject Account</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="system-toast">
+  <span id="toast-text">Toast message</span>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  let allUsers = [];
+  let currentFilter = 'all';
+  let confirmUserId = null;
+
+  function getToken() {
+    const t = localStorage.getItem('rdmsToken');
+    if (!t) window.location.href = 'index.html';
+    return t;
+  }
+
+  function checkAdminAccess() {
+    const user = localStorage.getItem('rdmsUser');
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
+    }
+    try {
+      const profile = JSON.parse(user);
+      document.querySelector('.user-name').textContent = profile.name || 'Unknown User';
+      document.querySelector('.user-role').textContent = profile.role || 'User';
+      
+      const avatarEl = document.getElementById('sidebar-user-avatar');
+      if (avatarEl && profile.name) {
+        avatarEl.textContent = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      if (profile.role !== 'NGO Admin') {
+        window.location.href = 'rdms-dashboard.html';
+        return;
+      }
+      
+      // Admin sidebar navigation section
+      const adminSec = document.getElementById('admin-nav-section');
+      if (adminSec) adminSec.style.display = 'block';
+    } catch (e) {
+      window.location.href = 'index.html';
+    }
+  }
+
+  async function logoutUser() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {}
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // Load Users List
+  async function loadUsers() {
+    const token = getToken();
+    const tbody = document.getElementById('users-tbody');
+    try {
+      const res = await fetch(`${API_BASE}/auth/all-users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const resData = await res.json();
+      allUsers = resData.data || [];
+      
+      updateKPIs();
+      renderTable();
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);">Failed to load user accounts database.</td></tr>`;
+    }
+  }
+
+  function updateKPIs() {
+    document.getElementById('kpi-total').textContent = allUsers.length;
+    document.getElementById('kpi-pending').textContent = allUsers.filter(u => u.status === 'pending').length;
+    document.getElementById('kpi-approved').textContent = allUsers.filter(u => u.status === 'approved').length;
+    document.getElementById('kpi-rejected').textContent = allUsers.filter(u => u.status === 'rejected').length;
+  }
+
+  function filterTab(tab) {
+    currentFilter = tab;
+    ['all', 'pending', 'approved', 'rejected'].forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) {
+        el.className = t === tab ? 'btn-primary' : 'btn-secondary';
+      }
+    });
+    renderTable();
+  }
+
+  function renderTable() {
+    const filtered = currentFilter === 'all' ? allUsers : allUsers.filter(u => u.status === currentFilter);
+    const tbody = document.getElementById('users-tbody');
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);">No user accounts found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(u => {
+      const registered = u.created_at ? new Date(u.created_at).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+      let statusBadge = 'chip-gray';
+      if (u.status === 'approved') statusBadge = 'chip-green';
+      else if (u.status === 'pending') statusBadge = 'chip-amber';
+      else if (u.status === 'rejected') statusBadge = 'chip-red';
+
+      let actionButtons = '';
+      if (u.status === 'pending') {
+        actionButtons = `
+          <button class="btn-primary" style="padding:4px 10px;font-size:11px;" onclick="approveUser(${u.user_id})">Approve</button>
+          <button class="btn-danger" style="padding:4px 10px;font-size:11px;" onclick="confirmReject(${u.user_id})">Reject</button>
+        `;
+      } else if (u.status === 'approved') {
+        actionButtons = `
+          <button class="btn-secondary" style="padding:4px 10px;font-size:11px;color:var(--red);border-color:var(--red);" onclick="confirmReject(${u.user_id})">Revoke Access</button>
+        `;
+      } else {
+        actionButtons = `
+          <button class="btn-primary" style="padding:4px 10px;font-size:11px;" onclick="approveUser(${u.user_id})">Re-approve</button>
+        `;
+      }
+
+      return `
+        <tr>
+          <td><span class="chip chip-gray">#${u.user_id}</span></td>
+          <td><strong>${escHtml(u.name)}</strong></td>
+          <td>${escHtml(u.email)}</td>
+          <td><span class="chip chip-blue">${escHtml(u.role)}</span></td>
+          <td><span class="chip ${statusBadge}">${u.status}</span></td>
+          <td>${registered}</td>
+          <td>
+            <div class="action-btns">
+              ${actionButtons}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Approve User
+  async function approveUser(id) {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/auth/approve/${id}`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        triggerToast('User approved successfully!', false);
+        loadUsers();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Failed to approve user.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  // Reject / Revoke Dialog
+  function confirmReject(id) {
+    confirmUserId = id;
+    document.getElementById('confirm-modal').classList.add('active');
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('confirm-modal').classList.remove('active');
+  }
+
+  async function executeConfirmReject() {
+    closeConfirmModal();
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/auth/reject/${confirmUserId}`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        triggerToast('User access revoked/rejected.', false);
+        loadUsers();
+      } else {
+        const err = await res.json();
+        triggerToast(err.message || 'Failed to reject user.', true);
+      }
+    } catch (e) { triggerToast(`Error: ${e.message}`, true); }
+  }
+
+  // Escaping
+  function escHtml(str) {
+    if (str === null || str === undefined) return '—';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function triggerToast(msg, err = false) {
+    const toast = document.getElementById('system-toast');
+    document.getElementById('toast-text').textContent = msg;
+    toast.className = err ? 'toast show error' : 'toast show';
+    setTimeout(() => toast.className = 'toast', 3500);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAccess();
+    loadUsers();
+  });
+</script>
+</body>
+</html>
